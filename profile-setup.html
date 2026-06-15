@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlowMate - Setup Your Profile</title>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ========================================
+           BASE STYLES
+        ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #F8B195 0%, #F67280 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ========================================
+           MAIN CONTAINER
+        ======================================== */
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 700px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* ========================================
+           HEADER
+        ======================================== */
+        .quiz-header {
+            background: linear-gradient(135deg, #F8B195 0%, #F67280 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .quiz-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .quiz-header p {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        /* ========================================
+           PROGRESS BAR
+        ======================================== */
+        .progress-container {
+            background: #f5f7fa;
+            padding: 20px 40px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #F8B195 0%, #F67280 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* ========================================
+           QUESTION CONTAINER
+        ======================================== */
+        .quiz-body {
+            padding: 40px;
+        }
+
+        .question-step {
+            display: none;
+        }
+
+        .question-step.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-step h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .question-hint {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 25px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* ========================================
+           OPTION CARDS (without emojis)
+        ======================================== */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .option-card {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-card:hover {
+            background: #f0f0f0;
+            transform: translateY(-3px);
+        }
+
+        .option-card.selected {
+            background: #fff0f3;
+            border-color: #F67280;
+        }
+
+        /* Font Awesome icon in card */
+        .option-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #F67280;
+        }
+
+        .option-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .option-desc {
+            font-size: 12px;
+            color: #999;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* ========================================
+           CHECKBOX OPTIONS
+        ======================================== */
+        .checkbox-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .checkbox-card {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkbox-card:hover {
+            background: #f0f0f0;
+        }
+
+        .checkbox-card.selected {
+            background: #fff0f3;
+            border-color: #F67280;
+        }
+
+        .checkbox-card input[type="checkbox"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-card label {
+            cursor: pointer;
+            font-weight: 500;
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* ========================================
+           TEXT INPUT
+        ======================================== */
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .input-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #F67280;
+        }
+
+        /* ========================================
+           NAVIGATION BUTTONS
+        ======================================== */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .btn-back {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-back:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-next {
+            background: #F67280;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-next:hover {
+            background: #e55b6f;
+        }
+
+        .btn-next:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* ========================================
+           SUCCESS MESSAGE
+        ======================================== */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 64px;
+            color: #4caf50;
+            margin-bottom: 20px;
+        }
+
+        .success-message h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .success-message p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #F67280;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .quiz-header h1 {
+                font-size: 24px;
+            }
+
+            .quiz-body {
+                padding: 30px 20px;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .checkbox-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <!-- Header -->
+        <div class="quiz-header">
+            <h1>Let's Get to Know Your Skin</h1>
+            <p>Answer a few quick questions to personalize your experience</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Question 1 of 6</div>
+        </div>
+
+        <!-- Quiz Body -->
+        <div class="quiz-body">
+            <!-- Loading indicator -->
+            <div class="loading" id="loadingDiv">
+                <div class="spinner"></div>
+                <p>Saving your profile...</p>
+            </div>
+
+            <!-- QUESTION 1: Gender -->
+            <div class="question-step active" data-step="1">
+                <h2>What is your gender?</h2>
+                <p class="question-hint">This helps us provide better recommendations</p>
+                
+                <div class="options-grid">
+                    <div class="option-card" onclick="selectOption(1, 'male')">
+                        <i class="fas fa-male option-icon"></i>
+                        <div class="option-label">Male</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption(1, 'female')">
+                        <i class="fas fa-female option-icon"></i>
+                        <div class="option-label">Female</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption(1, 'other')">
+                        <i class="fas fa-user option-icon"></i>
+                        <div class="option-label">Other</div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-next" onclick="nextStep()" id="nextBtn1" disabled>Next</button>
+                </div>
+            </div>
+
+            <!-- QUESTION 2: Pregnancy (CONDITIONAL - only for females) -->
+            <div class="question-step" data-step="2" id="pregnancyQuestion">
+                <h2>Are you pregnant or breastfeeding?</h2>
+                <p class="question-hint">This helps us flag ingredients that may not be safe</p>
+                
+                <div class="options-grid">
+                    <div class="option-card" onclick="selectOption(2, 'not-pregnant')">
+                        <i class="fas fa-check-circle option-icon"></i>
+                        <div class="option-label">No</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption(2, 'pregnant')">
+                        <i class="fas fa-baby option-icon"></i>
+                        <div class="option-label">Pregnant</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption(2, 'breastfeeding')">
+                        <i class="fas fa-heart option-icon"></i>
+                        <div class="option-label">Breastfeeding</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption(2, 'prefer-not-say')">
+                        <i class="fas fa-minus-circle option-icon"></i>
+                        <div class="option-label">Prefer not to say</div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-back" onclick="prevStep()">Back</button>
+                    <button class="btn btn-next" onclick="nextStep()" id="nextBtn2" disabled>Next</button>
+                </div>
+            </div>
+
+            <!-- QUESTION 3: Age Range -->
+            <div class="question-step" data-step="3">
+                <h2>What's your age range?</h2>
+                <p class="question-hint">Different ages have different skincare needs</p>
+                
+                <div class="options-grid">
+                    <div class="option-card" onclick="selectOption(3, 'teen')">
+                        <i class="fas fa-child option-icon"></i>
+                        <div class="option-label">13-19</div>
+                        <div class="option-desc">Teen</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption(3, 'young-adult')">
+                        <i class="fas fa-user-graduate option-icon"></i>
+                        <div class="option-label">20-29</div>
+                        <div class="option-desc">Young Adult</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption(3, 'adult')">
+                        <i class="fas fa-user-tie option-icon"></i>
+                        <div class="option-label">30-45</div>
+                        <div class="option-desc">Adult</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption(3, 'mature')">
+                        <i class="fas fa-user-clock option-icon"></i>
+                        <div class="option-label">46+</div>
+                        <div class="option-desc">Mature</div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-back" onclick="prevStep()">Back</button>
+                    <button class="btn btn-next" onclick="nextStep()" id="nextBtn3" disabled>Next</button>
+                </div>
+            </div>
+
+            <!-- QUESTION 4: Skin Type -->
+            <div class="question-step" data-step="4">
+                <h2>What's your skin type?</h2>
+                <p class="question-hint">Choose the one that best describes your skin</p>
+                
+                <div class="options-grid">
+                    <div class="option-card" onclick="selectOption(4, 'normal')">
+                        <i class="fas fa-smile option-icon"></i>
+                        <div class="option-label">Normal</div>
+                        <div class="option-desc">Balanced, not too oily or dry</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption(4, 'oily')">
+                        <i class="fas fa-tint option-icon"></i>
+                        <div class="option-label">Oily</div>
+                        <div class="option-desc">Shiny, prone to breakouts</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption(4, 'dry')">
+                        <i class="fas fa-sun option-icon"></i>
+                        <div class="option-label">Dry</div>
+                        <div class="option-desc">Tight, flaky texture</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption(4, 'combination')">
+                        <i class="fas fa-adjust option-icon"></i>
+                        <div class="option-label">Combination</div>
+                        <div class="option-desc">Oily T-zone, dry cheeks</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption(4, 'sensitive')">
+                        <i class="fas fa-exclamation-triangle option-icon"></i>
+                        <div class="option-label">Sensitive</div>
+                        <div class="option-desc">Easily irritated, reactive</div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-back" onclick="prevStep()">Back</button>
+                    <button class="btn btn-next" onclick="nextStep()" id="nextBtn4" disabled>Next</button>
+                </div>
+            </div>
+
+            <!-- QUESTION 5: Skin Concerns -->
+            <div class="question-step" data-step="5">
+                <h2>What are your main skin concerns?</h2>
+                <p class="question-hint">Select all that apply</p>
+                
+                <div class="checkbox-options">
+                    <div class="checkbox-card" onclick="toggleCheckbox(5, 'acne')">
+                        <input type="checkbox" id="concern_acne" value="acne">
+                        <label for="concern_acne">Acne & Breakouts</label>
+                    </div>
+                    <div class="checkbox-card" onclick="toggleCheckbox(5, 'aging')">
+                        <input type="checkbox" id="concern_aging" value="aging">
+                        <label for="concern_aging">Wrinkles & Fine Lines</label>
+                    </div>
+                    <div class="checkbox-card" onclick="toggleCheckbox(5, 'pigmentation')">
+                        <input type="checkbox" id="concern_pigmentation" value="pigmentation">
+                        <label for="concern_pigmentation">Dark Spots</label>
+                    </div>
+                    <div class="checkbox-card" onclick="toggleCheckbox(5, 'redness')">
+                        <input type="checkbox" id="concern_redness" value="redness">
+                        <label for="concern_redness">Redness</label>
+                    </div>
+                    <div class="checkbox-card" onclick="toggleCheckbox(5, 'texture')">
+                        <input type="checkbox" id="concern_texture" value="texture">
+                        <label for="concern_texture">Uneven Texture</label>
+                    </div>
+                    <div class="checkbox-card" onclick="toggleCheckbox(5, 'pores')">
+                        <input type="checkbox" id="concern_pores" value="pores">
+                        <label for="concern_pores">Large Pores</label>
+                    </div>
+                    <div class="checkbox-card" onclick="toggleCheckbox(5, 'dryness')">
+                        <input type="checkbox" id="concern_dryness" value="dryness">
+                        <label for="concern_dryness">Dryness</label>
+                    </div>
+                    <div class="checkbox-card" onclick="toggleCheckbox(5, 'dullness')">
+                        <input type="checkbox" id="concern_dullness" value="dullness">
+                        <label for="concern_dullness">Dull Skin</label>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-back" onclick="prevStep()">Back</button>
+                    <button class="btn btn-next" onclick="nextStep()" id="nextBtn5" disabled>Next</button>
+                </div>
+            </div>
+
+            <!-- QUESTION 6: Allergies & Goals -->
+            <div class="question-step" data-step="6">
+                <h2>Additional Information</h2>
+                <p class="question-hint">Help us personalize even more (optional)</p>
+                
+                <div class="input-group">
+                    <label>Known Allergies or Sensitivities</label>
+                    <textarea id="allergiesInput" placeholder="Example: fragrance, alcohol, parabens&#10;&#10;Leave blank if none"></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>Your Skincare Goals</label>
+                    <textarea id="goalsInput" placeholder="Example: Clear my acne, reduce fine lines, even out skin tone&#10;&#10;Be as specific as you'd like!"></textarea>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-back" onclick="prevStep()">Back</button>
+                    <button class="btn btn-next" onclick="saveProfile()">Complete Setup</button>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle success-icon"></i>
+                <h2>Profile Complete!</h2>
+                <p>Your personalized skincare profile has been created. We'll use this information to give you tailored recommendations.</p>
+                <button class="btn btn-next" onclick="goToDashboard()">Go to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ========================================
+        // FIREBASE CONFIGURATION
+        // ========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfj-_lJznvocLDQyDiiZvtEUf9xa18B78",
+            authDomain: "glowmate-155a1.firebaseapp.com",
+            projectId: "glowmate-155a1",
+            storageBucket: "glowmate-155a1.firebasestorage.app",
+            messagingSenderId: "318839433654",
+            appId: "1:318839433654:web:c5ec16f4ab270e4a27f917"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ========================================
+        // GLOBAL VARIABLES
+        // ========================================
+        let currentUser = null;
+        let currentStep = 1;
+        let totalSteps = 6; // Will adjust if pregnancy question is skipped
+
+        // Object to store all answers
+        const profileData = {
+            gender: '',
+            pregnant: false,
+            breastfeeding: false,
+            ageRange: '',
+            skinType: '',
+            concerns: [],
+            allergies: '',
+            goals: ''
+        };
+
+        // ========================================
+        // CHECK AUTHENTICATION
+        // ========================================
+        auth.onAuthStateChanged(function(user) {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+            currentUser = user;
+        });
+
+        // ========================================
+        // NAVIGATION FUNCTIONS
+        // ========================================
+        function nextStep() {
+            // Hide current step
+            document.querySelectorAll('.question-step').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            // SMART LOGIC: Skip pregnancy question if male
+            if (currentStep === 1 && profileData.gender === 'male') {
+                // Skip question 2 (pregnancy)
+                currentStep = 3;
+                totalSteps = 5; // One less question
+            } else {
+                currentStep++;
+            }
+
+            // Show next step
+            document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+
+            // Update progress bar
+            updateProgress();
+        }
+
+        function prevStep() {
+            // Hide current step
+            document.querySelectorAll('.question-step').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            // SMART LOGIC: Skip pregnancy question going back if male
+            if (currentStep === 3 && profileData.gender === 'male') {
+                // Go back to gender (skip pregnancy)
+                currentStep = 1;
+            } else {
+                currentStep--;
+            }
+
+            // Show previous step
+            document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+
+            // Update progress bar
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Question ${currentStep} of ${totalSteps}`;
+        }
+
+        // ========================================
+        // OPTION SELECTION
+        // ========================================
+        function selectOption(step, value) {
+            // Remove 'selected' class from all cards in this step
+            const currentQuestion = document.querySelector(`[data-step="${step}"]`);
+            currentQuestion.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add 'selected' class to clicked card
+            event.currentTarget.classList.add('selected');
+
+            // Save the answer
+            if (step === 1) {
+                profileData.gender = value;
+            }
+            if (step === 2) {
+                // Pregnancy status
+                profileData.pregnant = (value === 'pregnant');
+                profileData.breastfeeding = (value === 'breastfeeding');
+            }
+            if (step === 3) profileData.ageRange = value;
+            if (step === 4) profileData.skinType = value;
+
+            // Enable next button
+            const nextBtn = document.getElementById(`nextBtn${step}`);
+            if (nextBtn) nextBtn.disabled = false;
+        }
+
+        // ========================================
+        // CHECKBOX TOGGLE
+        // ========================================
+        function toggleCheckbox(step, value) {
+            const checkbox = document.getElementById(`concern_${value}`);
+            const card = event.currentTarget;
+
+            // Toggle checkbox
+            checkbox.checked = !checkbox.checked;
+
+            // Toggle card styling
+            if (checkbox.checked) {
+                card.classList.add('selected');
+                // Add to concerns array
+                if (!profileData.concerns.includes(value)) {
+                    profileData.concerns.push(value);
+                }
+            } else {
+                card.classList.remove('selected');
+                // Remove from concerns array
+                profileData.concerns = profileData.concerns.filter(c => c !== value);
+            }
+
+            // Enable next button if at least one concern is selected
+            document.getElementById('nextBtn5').disabled = profileData.concerns.length === 0;
+        }
+
+        // ========================================
+        // SAVE PROFILE TO FIREBASE
+        // ========================================
+        async function saveProfile() {
+            // Get text input values
+            profileData.allergies = document.getElementById('allergiesInput').value.trim();
+            profileData.goals = document.getElementById('goalsInput').value.trim();
+
+            // Show loading
+            document.querySelector('[data-step="6"]').style.display = 'none';
+            document.getElementById('loadingDiv').style.display = 'block';
+
+            try {
+                // Save to Firestore
+                // CORRECT
+              await db.collection('users').doc(currentUser.uid).set({
+              name: currentUser.displayName || currentUser.email.split('@')[0],
+              email: currentUser.email,
+              skinProfile: { ...profileData, completed: true }
+              }, { merge: true });
+
+                console.log('Profile saved successfully!');
+
+                // Hide loading, show success
+                document.getElementById('loadingDiv').style.display = 'none';
+                document.getElementById('successMessage').classList.add('active');
+
+            } catch (error) {
+                console.error('Error saving profile:', error);
+                alert('Error saving profile: ' + error.message);
+                document.getElementById('loadingDiv').style.display = 'none';
+                document.querySelector('[data-step="6"]').style.display = 'block';
+            }
+        }
+
+        // ========================================
+        // GO TO DASHBOARD
+        // ========================================
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

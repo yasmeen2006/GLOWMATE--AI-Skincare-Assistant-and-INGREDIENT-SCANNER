@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlowMate - Ingredient Scanner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #F8B195 0%, #F67280 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .top-bar {
+            max-width: 1200px;
+            margin: 0 auto 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { color: white; font-size: 28px; font-weight: bold; }
+        .btn-back {
+            padding: 10px 20px;
+            background: white;
+            color: #F67280;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Segoe UI', sans-serif;
+            transition: background 0.3s;
+        }
+        .btn-back:hover { background: #fff0f3; }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        /* ── Upload ── */
+        .upload-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            margin-bottom: 30px;
+        }
+        .upload-section h1 { font-size: 28px; color: #333; margin-bottom: 10px; text-align: center; }
+        .upload-section > p {
+            font-family: 'Segoe UI', sans-serif;
+            color: #666; text-align: center; margin-bottom: 30px; font-size: 15px;
+        }
+        .upload-area {
+            border: 3px dashed #e0e0e0;
+            border-radius: 15px;
+            padding: 50px 30px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: #fafafa;
+        }
+        .upload-area:hover, .upload-area.dragover { border-color: #F67280; background: #fff0f3; }
+        .upload-area.dragover { transform: scale(1.02); }
+        .upload-icon { font-size: 64px; color: #F67280; margin-bottom: 20px; }
+        .upload-area h3 { color: #333; margin-bottom: 10px; font-size: 20px; font-family: 'Segoe UI', sans-serif; }
+        .upload-area p { color: #999; font-size: 14px; margin-bottom: 20px; }
+        #fileInput { display: none; }
+        .upload-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+        .btn-upload {
+            padding: 14px 28px;
+            background: #F67280;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-upload:hover { background: #e55b6f; transform: translateY(-2px); }
+
+        /* ── Preview ── */
+        .preview-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            margin-bottom: 30px;
+            display: none;
+        }
+        .preview-section.active { display: block; }
+        .preview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .preview-header h2 { color: #333; font-size: 22px; }
+        .btn-remove {
+            padding: 8px 16px; background: #ff4757; color: white;
+            border: none; border-radius: 8px; cursor: pointer;
+            font-size: 13px; font-weight: 600; font-family: 'Segoe UI', sans-serif;
+        }
+        .btn-remove:hover { background: #ff3838; }
+        .preview-image { width: 100%; max-height: 400px; object-fit: contain; border-radius: 12px; border: 2px solid #f0f0f0; }
+        .btn-analyze {
+            width: 100%; padding: 16px; background: #F67280; color: white;
+            border: none; border-radius: 12px; cursor: pointer;
+            font-size: 16px; font-weight: 600; margin-top: 20px;
+            transition: background 0.3s; font-family: 'Segoe UI', sans-serif;
+        }
+        .btn-analyze:hover { background: #e55b6f; }
+
+        /* ── Loading ── */
+        .loading-section {
+            background: white; border-radius: 20px; padding: 60px 30px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12); text-align: center; display: none;
+        }
+        .loading-section.active { display: block; }
+        .spinner {
+            border: 5px solid #f3f3f3; border-top: 5px solid #F67280;
+            border-radius: 50%; width: 60px; height: 60px;
+            animation: spin 1s linear infinite; margin: 0 auto 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-section h3 { color: #333; margin-bottom: 10px; font-size: 20px; }
+        .loading-section p { color: #999; font-size: 14px; font-family: 'Segoe UI', sans-serif; }
+        .loading-steps { margin-top: 20px; text-align: left; max-width: 340px; margin-left: auto; margin-right: auto; }
+        .loading-step {
+            display: flex; align-items: center; gap: 10px;
+            font-family: 'Segoe UI', sans-serif; font-size: 13px;
+            color: #bbb; padding: 6px 0; transition: color 0.4s;
+        }
+        .loading-step.done  { color: #4caf50; }
+        .loading-step.active{ color: #F67280; font-weight: 600; }
+        .step-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #ddd; flex-shrink: 0; transition: background 0.4s;
+        }
+        .loading-step.done   .step-dot { background: #4caf50; }
+        .loading-step.active .step-dot { background: #F67280; }
+
+        /* ── Results ── */
+        .results-section {
+            background: white; border-radius: 20px; padding: 40px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12); display: none;
+        }
+        .results-section.active { display: block; }
+
+        .score-display {
+            text-align: center; padding: 30px;
+            background: linear-gradient(135deg, #F8B195 0%, #F67280 100%);
+            border-radius: 15px; margin-bottom: 30px; color: white;
+        }
+        .score-number { font-size: 72px; font-weight: bold; margin-bottom: 10px; }
+        .score-label  { font-size: 24px; font-weight: 600; margin-bottom: 5px; font-family: 'Segoe UI', sans-serif; }
+        .score-description { font-size: 15px; opacity: 0.95; font-family: 'Segoe UI', sans-serif; }
+
+        .product-info { text-align: center; margin-bottom: 30px; }
+        .product-info h2 { color: #333; font-size: 24px; margin-bottom: 10px; }
+        .product-info p  { color: #666; font-size: 14px; font-family: 'Segoe UI', sans-serif; }
+
+        /* Stats bar */
+        .stats-bar {
+            display: flex; gap: 12px; justify-content: center;
+            flex-wrap: wrap; margin-bottom: 30px;
+        }
+        .stat-pill {
+            padding: 6px 16px; border-radius: 20px;
+            font-family: 'Segoe UI', sans-serif; font-size: 13px; font-weight: 600;
+        }
+        .stat-pill.green  { background: #e8f5e9; color: #2e7d32; }
+        .stat-pill.yellow { background: #fff9c4; color: #f57f17; }
+        .stat-pill.red    { background: #ffebee; color: #c62828; }
+        .stat-pill.grey   { background: #f5f5f5; color: #757575; }
+
+        .category-section { margin-bottom: 25px; }
+        .category-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 15px; padding: 12px 18px; border-radius: 10px;
+        }
+        .category-header.beneficial { background: #e8f5e9; }
+        .category-header.caution    { background: #fff9c4; }
+        .category-header.risky      { background: #ffebee; }
+        .category-header.unknown    { background: #f5f5f5; }
+
+        .category-icon  { font-size: 22px; }
+        .category-title { font-size: 17px; font-weight: 600; font-family: 'Segoe UI', sans-serif; }
+        .category-title.beneficial { color: #2e7d32; }
+        .category-title.caution    { color: #f57f17; }
+        .category-title.risky      { color: #c62828; }
+        .category-title.unknown    { color: #757575; }
+
+        .ingredient-card {
+            background: #fafafa; border-left: 4px solid #ddd;
+            padding: 15px 18px; margin-bottom: 12px; border-radius: 8px; transition: all 0.3s;
+        }
+        .ingredient-card:hover { background: #f5f5f5; transform: translateX(4px); }
+        .ingredient-card.beneficial { border-left-color: #4caf50; }
+        .ingredient-card.caution    { border-left-color: #ff9800; }
+        .ingredient-card.risky      { border-left-color: #f44336; }
+        .ingredient-card.unknown    { border-left-color: #9e9e9e; }
+        .ingredient-card.hero       { border-left-color: #F67280; background: #fff5f7; }
+
+        .ingredient-name   { font-weight: 600; color: #333; margin-bottom: 5px; font-size: 15px; font-family: 'Segoe UI', sans-serif; }
+        .ingredient-reason { color: #666; font-size: 13px; line-height: 1.6; font-family: 'Segoe UI', sans-serif; }
+        .hero-tag {
+            display: inline-block; background: #F67280; color: white;
+            font-size: 11px; font-weight: 700; padding: 2px 8px;
+            border-radius: 10px; margin-left: 8px; vertical-align: middle;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .action-buttons { display: flex; gap: 15px; margin-top: 30px; }
+        .btn-secondary {
+            flex: 1; padding: 14px; background: #F67280; color: white;
+            border: none; border-radius: 10px; cursor: pointer;
+            font-size: 15px; font-weight: 600;
+            transition: background 0.3s; font-family: 'Segoe UI', sans-serif;
+        }
+        .btn-secondary:hover { background: #e55b6f; }
+
+        @media (max-width: 768px) {
+            .upload-section, .results-section { padding: 25px 18px; }
+            .upload-buttons { flex-direction: column; }
+            .score-number { font-size: 56px; }
+            .action-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="logo">GlowMate Scanner</div>
+    <button class="btn-back" onclick="window.location.href='dashboard.html'">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </button>
+</div>
+
+<div class="container">
+
+    <!-- UPLOAD -->
+    <div class="upload-section" id="uploadSection">
+        <h1>Scan Your Product</h1>
+        <p>Upload a clear photo of your skincare product's ingredient list for instant analysis</p>
+        <div class="upload-area" id="uploadArea">
+            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+            <h3>Drag & Drop Image Here</h3>
+            <p>or choose an option below</p>
+            <div class="upload-buttons">
+                <button class="btn-upload" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open"></i> Choose from Gallery
+                </button>
+                <button class="btn-upload" onclick="openCamera()">
+                    <i class="fas fa-camera"></i> Take Photo
+                </button>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
+        </div>
+        <p style="margin-top:20px;text-align:center;font-size:13px;color:#999;">
+            <i class="fas fa-info-circle"></i> Supported formats: JPG, PNG (Max 10MB)
+        </p>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="preview-section" id="previewSection">
+        <div class="preview-header">
+            <h2>Image Preview</h2>
+            <button class="btn-remove" onclick="removeImage()"><i class="fas fa-times"></i> Remove</button>
+        </div>
+        <img id="previewImage" class="preview-image" alt="Product preview">
+        <button class="btn-analyze" onclick="analyzeProduct()">
+            <i class="fas fa-search"></i> Analyze Ingredients
+        </button>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-section" id="loadingSection">
+        <div class="spinner"></div>
+        <h3>Analyzing Your Product...</h3>
+        <p id="loadingMessage">Getting started...</p>
+        <div class="loading-steps">
+            <div class="loading-step" id="step1"><div class="step-dot"></div>Reading ingredients from image</div>
+            <div class="loading-step" id="step2"><div class="step-dot"></div>Parsing ingredient list</div>
+            <div class="loading-step" id="step3"><div class="step-dot"></div>Matching to database</div>
+            <div class="loading-step" id="step4"><div class="step-dot"></div>Personalizing for your skin</div>
+        </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-section" id="resultsSection">
+        <div class="score-display">
+            <div class="score-number"      id="scoreNumber">--</div>
+            <div class="score-label"       id="scoreLabel">Analyzing...</div>
+            <div class="score-description" id="scoreDescription"></div>
+        </div>
+        <div class="product-info">
+            <h2 id="productName">Product Analysis</h2>
+            <p  id="productSummary"></p>
+        </div>
+        <div class="stats-bar" id="statsBar"></div>
+        <div id="ingredientsCategories"></div>
+        <div class="action-buttons">
+            <button class="btn-secondary" onclick="resetScanner()">
+                <i class="fas fa-redo"></i> Scan Another Product
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════════════
+const GROQ_API_KEY   =  CONFIG.GROQ_API_KEY;
+const VISION_MODEL   = 'meta-llama/llama-4-scout-17b-16e-instruct';
+const TEXT_MODEL     = 'llama-3.1-8b-instant';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAfj-_lJznvocLDQyDiiZvtEUf9xa18B78",
+    authDomain: "glowmate-155a1.firebaseapp.com",
+    projectId: "glowmate-155a1",
+    storageBucket: "glowmate-155a1.firebasestorage.app",
+    messagingSenderId: "318839433654",
+    appId: "1:318839433654:web:c5ec16f4ab270e4a27f917"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let currentUser        = null;
+let userProfile        = null;
+let currentImage       = null;
+let ingredientDatabase = {};
+let flatKeyMap         = null;
+let aiCache            = {};    // cache AI results for unknown ingredients
+
+// ════════════════════════════════════════════════════════════
+// AUTH + PROFILE LOAD
+// ════════════════════════════════════════════════════════════
+auth.onAuthStateChanged(async user => {
+    if (!user) { window.location.href = 'index.html'; return; }
+    currentUser = user;
+    try {
+        const doc = await db.collection('users').doc(user.uid).get();
+        if (doc.exists) {
+            userProfile = doc.data().skinProfile;
+            // ── FIX 1: Normalize allergies → always an Array ──────────────
+            // Firebase stores allergies as a plain string (from the textarea).
+            // Array methods like .some() crash on strings.
+            // We convert here once so all downstream code is safe.
+            if (userProfile) {
+                userProfile.allergies = toArray(userProfile.allergies);
+                userProfile.concerns  = toArray(userProfile.concerns);
+                // ── FIX 2: Normalize pregnancy field name ──────────────────
+                // profile-setup.html saves it as 'pregnant' (boolean).
+                // Old scanner code used 'pregnancy' (wrong key → always undefined).
+                // We support both here.
+                if (userProfile.pregnancy === undefined) {
+                    userProfile.pregnancy = userProfile.pregnant || userProfile.breastfeeding || false;
+                }
+            }
+        }
+    } catch(e) { console.warn('Profile load error:', e); }
+    loadIngredientDatabase();
+});
+
+/*
+ * toArray — converts any value into a clean string array.
+ * "fragrance, alcohol"  →  ["fragrance", "alcohol"]
+ * ["acne","pores"]      →  ["acne","pores"]          (unchanged)
+ * undefined / null / "" →  []
+ */
+function toArray(val) {
+    if (!val) return [];
+    if (Array.isArray(val)) return val.filter(Boolean);
+    if (typeof val === 'string') {
+        return val.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+    }
+    return [];
+}
+
+async function loadIngredientDatabase() {
+    try {
+        const res = await fetch('data/ingredients.json');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        ingredientDatabase = await res.json();
+        // ── FIX 3: Build flatKeyMap AFTER database has loaded ─────────────
+        // The old code called buildFlatKeyMap() lazily but flatKeyMap was
+        // never reset when the DB loaded, so on the first scan it could be
+        // built from an empty ingredientDatabase object.
+        flatKeyMap = null;        // force a fresh build with real data
+        buildFlatKeyMap();
+        console.log('✅ DB loaded:', Object.keys(ingredientDatabase).length, 'entries');
+    } catch(e) {
+        console.error('❌ DB load failed:', e);
+        // Scanner still works — unknown ingredients fall back to AI
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// DRAG & DROP
+// ════════════════════════════════════════════════════════════
+const uploadArea = document.getElementById('uploadArea');
+['dragenter','dragover','dragleave','drop'].forEach(ev =>
+    uploadArea.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); })
+);
+['dragenter','dragover'].forEach(ev =>
+    uploadArea.addEventListener(ev, () => uploadArea.classList.add('dragover'))
+);
+['dragleave','drop'].forEach(ev =>
+    uploadArea.addEventListener(ev, () => uploadArea.classList.remove('dragover'))
+);
+uploadArea.addEventListener('drop', e => {
+    const f = e.dataTransfer.files[0];
+    if (f) handleFile(f);
+});
+
+// ════════════════════════════════════════════════════════════
+// FILE HANDLING
+// ════════════════════════════════════════════════════════════
+function handleFileSelect(e) { if (e.target.files[0]) handleFile(e.target.files[0]); }
+
+function openCamera() {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*'; inp.capture = 'environment';
+    inp.onchange = handleFileSelect;
+    inp.click();
+}
+
+function handleFile(file) {
+    if (!file.type.startsWith('image/')) { alert('Please upload an image file (JPG, PNG, etc.)'); return; }
+    if (file.size > 10 * 1024 * 1024)   { alert('File is too large. Maximum size is 10MB.'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+        currentImage = e.target.result;
+        document.getElementById('previewImage').src = currentImage;
+        document.getElementById('uploadSection').style.display = 'none';
+        document.getElementById('previewSection').classList.add('active');
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeImage() {
+    currentImage = null;
+    document.getElementById('previewSection').classList.remove('active');
+    document.getElementById('uploadSection').style.display = 'block';
+    document.getElementById('fileInput').value = '';
+}
+
+// ════════════════════════════════════════════════════════════
+// LOADING STEP INDICATOR
+// ════════════════════════════════════════════════════════════
+function setStep(n) {
+    // n = 1..4
+    for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById('step' + i);
+        el.classList.remove('active', 'done');
+        if (i < n)  el.classList.add('done');
+        if (i === n) el.classList.add('active');
+    }
+}
+function updateLoading(msg) {
+    document.getElementById('loadingMessage').textContent = msg;
+}
+
+// ════════════════════════════════════════════════════════════
+// MAIN ANALYSIS FLOW
+// ════════════════════════════════════════════════════════════
+async function analyzeProduct() {
+    document.getElementById('previewSection').classList.remove('active');
+    document.getElementById('loadingSection').classList.add('active');
+
+    try {
+        // ── Step 1: AI Vision reads the image ──────────────────────────
+        setStep(1);
+        updateLoading('Reading ingredient list from image...');
+        const rawText = await extractWithGroqVision(currentImage);
+        console.log('📝 Vision output:', rawText);
+
+        // ── Step 2: Parse into a clean list ────────────────────────────
+        setStep(2);
+        updateLoading('Parsing ingredient list...');
+        const ingredientList = parseIngredients(rawText);
+        console.log('📋 Parsed:', ingredientList.length, 'ingredients:', ingredientList);
+
+        if (!ingredientList.length) {
+            throw new Error(
+                'No ingredients detected in the image.\n\n' +
+                'Tips:\n• Make sure the ingredient list is clearly visible\n' +
+                '• Try better lighting\n• Crop the image to just show the ingredient list'
+            );
+        }
+
+        // ── Step 3: Match to database ───────────────────────────────────
+        setStep(3);
+        updateLoading('Matching to ingredient database...');
+        // (matching happens inside analyzeIngredients)
+
+        // ── Step 4: Personalize for skin profile ────────────────────────
+        setStep(4);
+        updateLoading('Personalizing results for your skin...');
+        const result = await analyzeIngredients(ingredientList);
+
+        // ── Show results ────────────────────────────────────────────────
+        displayResults(result);
+        document.getElementById('loadingSection').classList.remove('active');
+        document.getElementById('resultsSection').classList.add('active');
+
+    } catch(err) {
+        console.error('Analysis error:', err);
+        alert('⚠️ ' + (err.message || 'Something went wrong. Please try again.'));
+        document.getElementById('loadingSection').classList.remove('active');
+        document.getElementById('previewSection').classList.add('active');
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// STEP 1 — GROQ VISION: reads text from product photo
+// ════════════════════════════════════════════════════════════
+async function extractWithGroqVision(imageBase64) {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${GROQ_API_KEY}`
+        },
+        body: JSON.stringify({
+            model: VISION_MODEL,
+            messages: [{
+                role: 'user',
+                content: [
+                    {
+                        type: 'text',
+                        text: `You are reading the ingredient list from a skincare product photo.
+Extract ONLY the ingredients. Return them as a single comma-separated list.
+Rules:
+- Remove any label like "Ingredients:", "INCI:", "Contains:", "Active Ingredients:"
+- Keep full ingredient names exactly as printed
+- Do NOT add explanations, percentages, or numbering
+- Just return the comma-separated ingredient list and nothing else
+Example output: Aqua, Niacinamide, Glycerin, Salicylic Acid, Phenoxyethanol`
+                    },
+                    { type: 'image_url', image_url: { url: imageBase64 } }
+                ]
+            }],
+            temperature: 0.1,
+            max_tokens: 1500
+        })
+    });
+
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error('Vision AI error: ' + (err.error?.message || 'Could not read image. Please try again.'));
+    }
+    const data = await res.json();
+    return (data.choices[0]?.message?.content || '').trim();
+}
+
+// ════════════════════════════════════════════════════════════
+// STEP 2 — PARSE: raw text → clean string array
+// ════════════════════════════════════════════════════════════
+function parseIngredients(text) {
+    // Remove common labels
+    let clean = text
+        .replace(/^[\s\S]*?ingredients?:?\s*/i, '')
+        .replace(/contains?:?\s*/gi, '')
+        .replace(/inci:?\s*/gi, '')
+        .replace(/active ingredients?:?\s*/gi, '')
+        .replace(/\n+/g, ',');
+
+    const seen = new Set();
+    return clean
+        .split(/[,;]+/)
+        .map(s => {
+            s = s
+                .trim()
+                .replace(/\s*[\(\[]?\d+[\.,]?\d*\s*%[\)\]]?\s*$/, '') // remove trailing %
+                .replace(/^\*+/, '')    // remove leading asterisks
+                .replace(/\*+$/, '')    // remove trailing asterisks
+                .trim();
+            if (!s) return null;
+            // Capitalize first letter, lowercase rest preserving inner caps for INCI names
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        })
+        .filter(s => {
+            if (!s || s.length < 2) return false;
+            if (/^\d+$/.test(s)) return false;             // pure numbers
+            if (/^[^a-zA-Z]+$/.test(s)) return false;     // no letters at all
+            const k = s.toLowerCase();
+            if (seen.has(k)) return false;                  // duplicate
+            seen.add(k);
+            return true;
+        });
+}
+
+// ════════════════════════════════════════════════════════════
+// MATCHING ENGINE
+//
+// HOW IT WORKS:
+//   ingredients.json uses mixed key formats:
+//     "hyaluronic-acid"    (hyphens)
+//     "alpha arbutin"      (spaces)
+//     "alpha_arbutin"      (underscores)
+//
+//   Product labels use:  "Hyaluronic Acid", "Alpha Arbutin" etc.
+//
+//   flattenKey() strips ALL non-letter/digit chars so:
+//     "Hyaluronic Acid"   → "hyaluronicacid"
+//     "hyaluronic-acid"   → "hyaluronicacid"   ← same ✅
+//     "hyaluronic_acid"   → "hyaluronicacid"   ← same ✅
+// ════════════════════════════════════════════════════════════
+function flattenKey(str) {
+    return (str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function buildFlatKeyMap() {
+    flatKeyMap = {};
+    for (const key of Object.keys(ingredientDatabase)) {
+        const fk = flattenKey(key);
+        if (fk) flatKeyMap[fk] = key;
+
+        // Also index by the display name inside the entry
+        const entry = ingredientDatabase[key];
+        if (entry && entry.name) {
+            const fn = flattenKey(entry.name);
+            if (fn && !flatKeyMap[fn]) flatKeyMap[fn] = key;
+        }
+    }
+}
+
+// ── FIX 4: SYNONYMS with corrected DB keys ──────────────────────────────
+// The old code had wrong target keys like 'alovera', 'arganoil', 'greentea'
+// which don't exist in ingredients.json. Corrected to actual DB keys.
+const SYNONYMS = {
+    // Water variants
+    'aqua': 'water',
+    'purifiedwater': 'purified water',
+    'deionizedwater': 'water',
+
+    // Niacinamide variants
+    'nicotinamide': 'niacinamide',
+    'vitaminb3': 'niacinamide',
+
+    // Vitamin C variants
+    'ascorbicacid': 'vitamin-c',
+    'lascorbicacid': 'vitamin-c',
+    'sodiumascorbylphosphate': 'vitamin-c',
+    'ascorbylglucoside': 'vitamin-c',
+
+    // Vitamin E — map to squalane (safe emollient) since no tocopherol key
+    'tocopherol': 'squalane',
+    'tocopherylacetate': 'squalane',
+
+    // Retinoids
+    'retinaldehyde': 'retinal',
+    'allTransRetinol': 'retinol',
+
+    // Arbutin
+    'alphaarbutin': 'alpha arbutin',
+    'betaarbutin': 'alpha arbutin',
+
+    // Glycols
+    'butyleneglycol': 'butylene_glycol',
+    '13butyleneglycol': 'butylene_glycol',
+    '13propanediol': 'propanediol',
+    'pentyleneglycol': 'propanediol',
+
+    // Emollients & esters (safe — map to squalane as safe neutral)
+    'capryliccaprictriglyceride': 'squalane',
+    'capryliccapric': 'squalane',
+    'isononylisononanoate': 'squalane',
+    'c1214alkylbenzoate': 'squalane',
+    'c1415alkylbenzoate': 'squalane',
+    'dicaprylylcarbonate': 'squalane',
+    'octyldodecanol': 'squalane',
+    'neopentylglycoldiheptanoate': 'squalane',
+
+    // Silicones
+    'cyclomethicone': 'dimethicone',
+    'cyclopentasiloxane': 'dimethicone',
+    'cyclotetrasiloxane': 'dimethicone',
+    'polydimethylsiloxane': 'dimethicone',
+
+    // Fatty alcohols (SAFE — not drying, unlike ethanol/alcohol denat)
+    'cetearylalcohol': 'squalane',
+    'cetylalcohol': 'squalane',
+    'stearylalcohol': 'squalane',
+    'behenylalcohol': 'squalane',
+
+    // Drying / harsh alcohols
+    'ethanol': 'alcohol-denat',
+    'sd40': 'alcohol-denat',
+    'isopropylalcohol': 'alcohol-denat',
+    'denaturedAlcohol': 'alcohol-denat',
+
+    // Emulsifiers & thickeners (safe — map to allantoin as neutral/gentle)
+    'carbomer': 'allantoin',
+    'xanthangum': 'allantoin',
+    'hydroxyethylcellulose': 'allantoin',
+    'polyacrylate13': 'allantoin',
+    'sodiumacrylates': 'allantoin',
+    'ceteareth20': 'allantoin',
+    'polysorbate20': 'allantoin',
+    'polysorbate60': 'allantoin',
+    'glycerylstearate': 'allantoin',
+    'stearicacid': 'allantoin',
+    'palmiticacid': 'allantoin',
+    'myristicacid': 'allantoin',
+
+    // Preservatives
+    'methylparaben': 'parabens',
+    'propylparaben': 'parabens',
+    'butylparaben': 'parabens',
+    'ethylhexylglycerin': 'ethylhexylglycerin',
+
+    // ── FIX 4a: Botanicals — corrected DB keys ──────────────────────
+    // Old code used 'alovera', 'greentea' etc. — those keys don't exist.
+    // Actual DB keys are 'aloe-vera', 'green-tea-extract', 'centella-asiatica'
+    'aloebarbadensisleafjuice': 'aloe-vera',
+    'aloebarbadensisleafextract': 'aloe-vera',
+    'aloebarbadensis': 'aloe-vera',
+    'aloe': 'aloe-vera',
+    'camelliasinensisleafextract': 'green-tea-extract',
+    'camelliasinensis': 'green-tea-extract',
+    'epigallocatechin': 'green-tea-extract',
+    'centellaasiatica': 'centella-asiatica',
+    'centellaasiaticaextract': 'centella-asiatica',
+    'asiaticoside': 'centella-asiatica',
+    'madecassoside': 'madecassoside',
+    'calendulaofficinalis': 'calendula',
+    'chamomillarecutita': 'chamomile',
+    'bisabolol': 'bisabolol',
+
+    // Sunscreens
+    'ethylhexylmethoxycinnamate': 'octinoxate',
+    'benzophenone3': 'oxybenzone',
+    'butylmethoxydibenzoylmethane': 'avobenzone',
+    'titaniumdioxide': 'titanium-dioxide',
+    'zincoxide': 'zinc-oxide',
+
+    // Peptides
+    'palmitoylpentapeptide4': 'peptides',
+    'palmitoyltetrapeptide7': 'peptides',
+    'acetylhexapeptide3': 'peptides',
+    'matrixyl': 'peptides',
+
+    // ── FIX 4b: Oils — corrected DB keys ────────────────────────────
+    // Old code: 'arganoil', 'rosehipoil', 'jojobasoil' — don't exist.
+    // Actual DB keys are 'argan-oil', 'rosehip-oil', 'jojoba-oil'
+    'arganiaspinosakerneloil': 'argan-oil',
+    'arganoil': 'argan-oil',
+    'rosacaninafruitoil': 'rosehip-oil',
+    'rosahipseedoil': 'rosehip-oil',
+    'simmondsiachinenssisseedoil': 'jojoba-oil',
+    'jojobasoil': 'jojoba-oil',
+    'cocosnuciferaoil': 'coconut-oil',
+    'sheabutter': 'shea-butter',
+    'butyrospermumsheabutter': 'shea-butter',
+    'helianthusannuusseedoil': 'jojoba-oil',   // sunflower → similar profile
+
+    // Fragrance
+    'parfum': 'fragrance',
+    'naturalfragrance': 'fragrance',
+    'limonene': 'limonene',
+    'linalool': 'linalool',
+
+    // Acids
+    'glycolicacid': 'glycolic-acid',
+    'lacticacid': 'lactic-acid',
+    'salicylicacid': 'salicylic-acid',
+    'azelaicacid': 'azelaic-acid',
+    'hyaluronicacid': 'hyaluronic-acid',
+    'sodiumhyaluronate': 'sodium-hyaluronate',
+
+    // Other actives
+    'benzoylperoxide': 'benzoyl-peroxide',
+    'sodiumlaurylsulfate': 'sodium-lauryl-sulfate',
+    'cocamidopropylbetaine': 'cocamidopropyl-betaine',
+    'kojicacid': 'kojic-acid',
+    'tranexamicacid': 'tranexamic-acid',
+    'glutathione': 'glutathione',
+    'coenzyme q10': 'coenzyme-q10',
+    'ubiquinone': 'coenzyme-q10',
+    'adenosine': 'adenosine',
+    'bakuchiol': 'bakuchiol',
+    'urea': 'urea',
+    'allantoin': 'allantoin',
+    'panthenol': 'panthenol',
+    'niacinamide': 'niacinamide',
+    'glycerin': 'glycerin',
+    'glycerol': 'glycerin',
+    'ceramide': 'ceramide-np',
+    'ceramidenp': 'ceramide-np',
+    'ceramideap': 'ceramide-ap',
+    'ceramideeop': 'ceramide-eop',
+    'squalane': 'squalane',
+    'dimethicone': 'dimethicone',
+    'phenoxyethanol': 'phenoxyethanol',
+    'retinol': 'retinol',
+    'retinal': 'retinal',
+    'retinylpalmitate': 'retinyl-palmitate',
+};
+
+function lookupIngredient(name) {
+    if (!flatKeyMap) buildFlatKeyMap();
+    const flat = flattenKey(name);
+    if (!flat) return null;
+
+    // 1. Direct flat-key match (handles hyphens, spaces, underscores in DB keys)
+    if (flatKeyMap[flat]) return ingredientDatabase[flatKeyMap[flat]];
+
+    // 2. Synonym table (exact)
+    if (SYNONYMS[flat]) {
+        const target = flattenKey(SYNONYMS[flat]);
+        if (flatKeyMap[target]) return ingredientDatabase[flatKeyMap[target]];
+    }
+
+    // 3. Partial synonym scan for long INCI names
+    //    e.g. "Caprylic/Capric Triglyceride" contains "capryliccapric"
+    for (const [synFlat, synTarget] of Object.entries(SYNONYMS)) {
+        if (flat.includes(synFlat) || (synFlat.length > 6 && synFlat.includes(flat))) {
+            const target = flattenKey(synTarget);
+            if (flatKeyMap[target]) return ingredientDatabase[flatKeyMap[target]];
+        }
+    }
+
+    // 4. Fuzzy Levenshtein fallback (≥85% similarity — catches OCR typos)
+    let bestKey = null, bestSim = 0.85;
+    for (const fk of Object.keys(flatKeyMap)) {
+        // Only compare strings of similar length (speed + accuracy)
+        if (Math.abs(fk.length - flat.length) > 5) continue;
+        const sim = strSimilarity(flat, fk);
+        if (sim > bestSim) { bestSim = sim; bestKey = fk; }
+    }
+    if (bestKey) return ingredientDatabase[flatKeyMap[bestKey]];
+
+    return null; // truly unknown
+}
+
+function strSimilarity(a, b) {
+    if (a === b) return 1;
+    const long = a.length >= b.length ? a : b;
+    const short = a.length >= b.length ? b : a;
+    if (!long.length) return 1;
+    return (long.length - editDist(long, short)) / long.length;
+}
+
+function editDist(s, t) {
+    const m = s.length, n = t.length;
+    const prev = Array.from({length: n+1}, (_, j) => j);
+    const curr = new Array(n+1);
+    for (let i = 1; i <= m; i++) {
+        curr[0] = i;
+        for (let j = 1; j <= n; j++) {
+            curr[j] = s[i-1] === t[j-1]
+                ? prev[j-1]
+                : 1 + Math.min(prev[j-1], curr[j-1], prev[j]);
+        }
+        prev.set ? prev.set(curr) : curr.forEach((v,j) => prev[j] = v);
+    }
+    return prev[n];
+}
+
+// ════════════════════════════════════════════════════════════
+// STEP 3 — AI FALLBACK for truly unknown ingredients
+//
+// If an ingredient isn't in ingredients.json AND isn't in the
+// synonym table AND fuzzy matching doesn't find it, we ask
+// Groq's fast text model to evaluate it.
+// Results are cached so we don't hit the API twice.
+// ════════════════════════════════════════════════════════════
+async function aiAnalyzeIngredient(name) {
+    const cacheKey = flattenKey(name);
+    if (aiCache[cacheKey]) return aiCache[cacheKey];
+
+    const profile = userProfile || {};
+    const prompt = `Analyze the skincare ingredient: "${name}"
+
+User skin profile:
+- Skin type: ${profile.skinType || 'unknown'}
+- Concerns: ${(profile.concerns || []).join(', ') || 'none'}
+- Pregnancy: ${profile.pregnancy ? 'yes' : 'no'}
+
+Reply with ONLY a valid JSON object (no markdown, no explanation):
+{
+  "name": "proper name",
+  "category": "beneficial" or "caution" or "risky",
+  "score": number from 1 to 10,
+  "benefits": ["benefit 1", "benefit 2"],
+  "goodFor": ["skin types"],
+  "avoid": ["skin types to avoid"],
+  "explanation": "one sentence about this ingredient for this user"
+}`;
+
+    try {
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GROQ_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: TEXT_MODEL,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.2,
+                max_tokens: 400
+            })
+        });
+
+        if (!res.ok) return null;
+        const data = await res.json();
+        let text = (data.choices[0]?.message?.content || '').trim();
+
+        // Strip markdown code fences if present
+        text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+
+        const parsed = JSON.parse(text);
+        aiCache[cacheKey] = parsed;
+        return parsed;
+    } catch(e) {
+        console.warn('AI fallback failed for', name, e.message);
+        return null;
+    }
+}
+
+// ════════════════════════════════════════════════════════════
+// STEP 4 — CATEGORIZE INGREDIENT against user skin profile
+//
+// This is the personalization engine.
+// It checks (in priority order):
+//   1. Allergy match         → risky (-20)
+//   2. Pregnancy unsafe      → risky (-15)
+//   3. In avoid[] for skin   → caution (-8)
+//   4. In caution[] for skin → caution (-3)
+//   5. Negative score (< -5) → caution/risky
+//   6. Good for skin type    → beneficial (+4)
+//   7. Targets a concern     → hero (+8)
+// ════════════════════════════════════════════════════════════
+function categorizeIngredient(data, ingredientName, position) {
+    const profile = userProfile || { skinType: 'normal', concerns: [], allergies: [], pregnancy: false };
+
+    const displayName = data.name || ingredientName;
+
+    // ── FIX 5: Safe array checks everywhere ──────────────────────────
+    // profile.allergies and profile.concerns are guaranteed arrays (see toArray above).
+    // data.avoid / data.goodFor / data.caution may be arrays or undefined — use ?. safely.
+
+    // ── Priority 1: Allergy ────────────────────────────────────────
+    const allergyHit = profile.allergies.some(a =>
+        displayName.toLowerCase().includes(a.toLowerCase()) ||
+        (data.allergen === true && a.toLowerCase() === 'fragrance')
+    );
+    if (allergyHit) {
+        return {
+            name: displayName, status: 'risky', isHero: false, scoreImpact: -20,
+            reason: '⚠️ You listed this as an allergen. Avoid this product.'
+        };
+    }
+
+    // ── Priority 2: Pregnancy unsafe ──────────────────────────────
+    if (profile.pregnancy) {
+        const unsafeForPreg = data.pregnancy === 'unsafe' || data.pregnancy === 'avoid';
+        if (unsafeForPreg) {
+            return {
+                name: displayName, status: 'risky', isHero: false, scoreImpact: -15,
+                reason: 'Not recommended during pregnancy. Please consult your doctor.'
+            };
+        }
+    }
+
+    // ── Priority 3: Known bad score (fragrance, SLS, harsh alcohols) ─
+    const dbScore = typeof data.score === 'number' ? data.score : 0;
+    if (dbScore <= -8 || data.allergen === true) {
+        return {
+            name: displayName, status: 'risky', isHero: false, scoreImpact: -8,
+            reason: data.explanation || 'Known sensitizer — may cause irritation or dryness.'
+        };
+    }
+
+    // ── FIX 6: Normalize avoid/caution/goodFor — may be array or string ──
+    const avoidList   = toArray(data.avoid);
+    const cautionList = toArray(data.caution);
+    const goodForList = toArray(data.goodFor);
+
+    // ── Priority 4: Avoid for this skin type ──────────────────────
+    const inAvoid = avoidList.some(a =>
+        a === profile.skinType || a === 'all' ||
+        (profile.concerns || []).some(c => c === a)
+    );
+    if (inAvoid) {
+        return {
+            name: displayName, status: 'caution', isHero: false, scoreImpact: -8,
+            reason: `Can be problematic for ${profile.skinType} skin. ${data.explanation || ''}`.trim()
+        };
+    }
+
+    // ── Priority 5: Caution for this skin type ────────────────────
+    const inCaution = cautionList.some(c =>
+        c === profile.skinType || c === 'all'
+    );
+
+    // ── Score for beneficial ──────────────────────────────────────
+    let scoreImpact = 0;
+    let isHero      = false;
+    let reason      = '';
+
+    const goodForSkin = goodForList.some(g => g === profile.skinType || g === 'all');
+    if (goodForSkin) {
+        scoreImpact += 4;
+        reason = `Good for ${profile.skinType} skin. `;
+    }
+
+    // Does it address any of the user's concerns?
+    const matchedConcern = (profile.concerns || []).find(concern =>
+        (data.benefits || []).some(b => b.toLowerCase().includes(concern.toLowerCase())) ||
+        (data.category || '').toLowerCase().includes(concern.toLowerCase()) ||
+        (data.explanation || '').toLowerCase().includes(concern.toLowerCase())
+    );
+    if (matchedConcern) {
+        scoreImpact += 8;
+        reason += `Targets ${matchedConcern}. `;
+        // Hero: top-12 position + DB score ≥ 7
+        if (position <= 12 && dbScore >= 7) {
+            isHero = true;
+            scoreImpact += 3;
+        }
+    }
+
+    // General quality bonus/penalty
+    if (dbScore >= 8)  scoreImpact += 2;
+    if (dbScore <= -3) scoreImpact -= 3;
+
+    // Fallback reason from DB
+    if (!reason) {
+        reason = data.explanation || (data.benefits || []).slice(0, 2).join('. ');
+    }
+
+    const status = inCaution ? 'caution' : (scoreImpact >= 0 ? 'beneficial' : 'caution');
+    const finalScoreImpact = inCaution ? Math.min(scoreImpact - 2, 0) : scoreImpact;
+
+    return {
+        name: displayName,
+        status,
+        isHero,
+        scoreImpact: finalScoreImpact,
+        reason: reason.trim() || 'Generally safe ingredient.'
+    };
+}
+
+// ════════════════════════════════════════════════════════════
+// STEP 4 — ANALYZE ALL INGREDIENTS
+//
+//   New model:
+//   1. Categorize every ingredient (beneficial / caution / risky / unknown)
+//   2. AFTER processing all ingredients, calculate score from RATIOS:
+//      - Base:    (beneficial / total matched) × 65   → max 65
+//      - Heroes:  each hero ingredient +7             → max +20
+//      - Caution: each caution ingredient -3
+//      - Risky:   each risky ingredient -10
+//   This means a product with ONLY safe fillers scores ~65 (average),
+//   and only products with real hero actives AND low risk score 80+.
+// ════════════════════════════════════════════════════════════
+async function analyzeIngredients(list) {
+    const profile = userProfile || { skinType: 'normal', concerns: [], allergies: [], pregnancy: false };
+
+    const beneficial = [];
+    const caution    = [];
+    const risky      = [];
+    const unknown    = [];
+    const heroes     = [];
+
+    // ── Step 1: Categorize every ingredient ──────────────────────
+    for (let i = 0; i < list.length; i++) {
+        const ingName = list[i];
+        let data = lookupIngredient(ingName);
+
+        // AI fallback for ingredients not in local database
+        if (!data) {
+            updateLoading(`Looking up ${ingName}...`);
+            data = await aiAnalyzeIngredient(ingName);
+        }
+
+        if (!data) {
+            // Truly unknown — skip silently, don't affect score
+            unknown.push({ name: ingName, reason: 'Not enough data to evaluate.' });
+            continue;
+        }
+
+        const result = categorizeIngredient(data, ingName, i + 1);
+
+        if (result.isHero)                     heroes.push(result);
+        if (result.status === 'risky')         risky.push(result);
+        else if (result.status === 'caution')  caution.push(result);
+        else                                   beneficial.push(result);
+    }
+
+    // ── Step 2: Calculate score from ratios (not accumulation) ───
+    const totalMatched = beneficial.length + caution.length + risky.length;
+
+    let score = 50; // default if nothing matched at all
+
+    if (totalMatched > 0) {
+        // Base score — what proportion of matched ingredients are beneficial?
+        const ratio = beneficial.length / totalMatched;
+        const base  = Math.round(ratio * 65);   // max 65 points from ratio
+
+        // Hero bonus — rewards products with standout active ingredients
+        const heroBonusPoints  = Math.min(heroes.length * 7, 20);
+
+        // Penalties — caution and risky ingredients reduce the score
+        const cautionPenalty   = caution.length * 3;
+        const riskyPenalty     = risky.length   * 10;
+
+        score = base + heroBonusPoints - cautionPenalty - riskyPenalty;
+        score = Math.max(5, Math.min(100, Math.round(score)));
+    }
+
+    // ── Step 3: Verdict label based on final score ────────────────
+    let label, description;
+    if      (score >= 82) { label = '🌟 Excellent Match';  description = `This product is a great fit for your ${profile.skinType} skin!`; }
+    else if (score >= 65) { label = '✅ Good Match';         description = `A solid choice for your ${profile.skinType} skin.`; }
+    else if (score >= 50) { label = '👍 Decent Match';       description = `Generally okay for your ${profile.skinType} skin.`; }
+    else if (score >= 35) { label = '⚠️ Average Match';      description = `Mixed results for your ${profile.skinType} skin — check the details below.`; }
+    else if (score >= 20) { label = '⚠️ Use with Caution';   description = `Several ingredients may not suit your ${profile.skinType} skin.`; }
+    else                  { label = '❌ Not Recommended';     description = `This product has ingredients that could cause problems for your ${profile.skinType} skin.`; }
+
+    // Mention hero ingredients in description if any
+    if (heroes.length > 0) {
+        const heroNames = heroes.slice(0, 2).map(h => h.name).join(' & ');
+        description += ` Standout ingredients: ${heroNames}.`;
+    }
+
+    return {
+        score, label, description,
+        heroes,
+        beneficial, caution, risky, unknown,
+        total: list.length
+    };
+}
+
+// ════════════════════════════════════════════════════════════
+// DISPLAY RESULTS
+// ════════════════════════════════════════════════════════════
+function displayResults(r) {
+    const profile = userProfile || { skinType: 'your', concerns: [] };
+
+    document.getElementById('scoreNumber').textContent      = r.score;
+    document.getElementById('scoreLabel').textContent       = r.label;
+    document.getElementById('scoreDescription').textContent = r.description;
+    document.getElementById('productName').textContent      = 'Ingredient Analysis';
+    document.getElementById('productSummary').textContent   =
+        `${r.total} ingredients scanned for your ${profile.skinType} skin`;
+
+    // Stats bar
+    const statsBar = document.getElementById('statsBar');
+    statsBar.innerHTML = `
+        <div class="stat-pill green">✓ ${r.beneficial.length} Beneficial</div>
+        <div class="stat-pill yellow">⚠ ${r.caution.length} Caution</div>
+        <div class="stat-pill red">✕ ${r.risky.length} Risky</div>
+        ${r.unknown.length ? `<div class="stat-pill grey">? ${r.unknown.length} Unknown</div>` : ''}
+    `;
+
+    const container = document.getElementById('ingredientsCategories');
+    container.innerHTML = '';
+
+    // ── Hero Ingredients (top picks for this user's skin) ──
+    if (r.heroes.length > 0) {
+        container.innerHTML += buildSection(
+            'beneficial',
+            '⭐ Hero Ingredients for Your Skin',
+            r.heroes,
+            true
+        );
+    }
+
+    // ── Risky ──
+    if (r.risky.length > 0) {
+        container.innerHTML += buildSection(
+            'risky',
+            '🚫 Avoid — Not Good For You',
+            r.risky
+        );
+    }
+
+    // ── Caution ──
+    if (r.caution.length > 0) {
+        container.innerHTML += buildSection(
+            'caution',
+            '⚠️ Use with Caution',
+            r.caution
+        );
+    }
+
+    // ── All Beneficial (collapsed list — keep UI clean) ──
+    if (r.beneficial.length > 0) {
+        // Show non-hero beneficials only — heroes already shown above
+        const nonHeroNames = new Set(r.heroes.map(h => h.name));
+        const rest = r.beneficial.filter(b => !nonHeroNames.has(b.name));
+        if (rest.length > 0) {
+            container.innerHTML += buildSection(
+                'beneficial',
+                `✅ ${rest.length} More Beneficial Ingredients`,
+                rest
+            );
+        }
+    }
+
+    // ── Empty state ──
+    if (r.heroes.length === 0 && r.risky.length === 0 && r.caution.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center;padding:30px 0;color:#888;font-family:'Segoe UI',sans-serif;">
+                <div style="font-size:48px;margin-bottom:12px;">✅</div>
+                <p>This product looks generally safe for your skin.</p>
+            </div>`;
+    }
+}
+
+function buildSection(cls, title, items, isHero = false) {
+    const iconMap = { beneficial: '✓', caution: '⚠', risky: '✕' };
+    let html = `<div class="category-section">
+        <div class="category-header ${cls}">
+            <span class="category-icon">${iconMap[cls] || '•'}</span>
+            <span class="category-title ${cls}">${title} (${items.length})</span>
+        </div>`;
+    items.forEach(item => {
+        const cardClass = isHero ? 'hero' : (item.status || cls);
+        const heroTag   = isHero ? '<span class="hero-tag">HERO</span>' : '';
+        html += `<div class="ingredient-card ${cardClass}">
+            <div class="ingredient-name">${item.name}${heroTag}</div>
+            <div class="ingredient-reason">${item.reason || ''}</div>
+        </div>`;
+    });
+    return html + '</div>';
+}
+
+// ════════════════════════════════════════════════════════════
+// RESET
+// ════════════════════════════════════════════════════════════
+function resetScanner() {
+    currentImage = null;
+    aiCache      = {};
+    document.getElementById('resultsSection').classList.remove('active');
+    document.getElementById('uploadSection').style.display = 'block';
+    document.getElementById('fileInput').value = '';
+    // Reset loading steps
+    for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById('step' + i);
+        el.classList.remove('active', 'done');
+    }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlowMate - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* ─── BASE ─── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #F8B195 0%, #F67280 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* ─── TOP BAR ─── */
+        .top-bar {
+            max-width: 1200px; margin: 0 auto 28px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: relative; z-index: 100;  /* sits above welcome card */
+        }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            color: white; font-size: 30px; font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .user-btn {
+            background: white; padding: 10px 20px; border-radius: 25px;
+            display: flex; align-items: center; gap: 12px;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            transition: all 0.3s; position: relative; z-index: 200;
+        }
+        .user-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
+        .user-avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg, #F8B195, #F67280);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: white; font-weight: 700;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .user-name { font-family: 'Segoe UI', sans-serif; font-weight: 600; color: #333; font-size: 14px; }
+        .user-menu {
+            position: absolute; top: 58px; right: 0;
+            background: white; border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            min-width: 200px; display: none; z-index: 9999; overflow: hidden;
+        }
+        .user-menu.show { display: block; }
+        .menu-item {
+            padding: 14px 20px; font-family: 'Segoe UI', sans-serif;
+            cursor: pointer; display: flex; align-items: center;
+            gap: 12px; transition: background 0.2s; color: #333; font-size: 14px;
+        }
+        .menu-item:last-child { color: #ff4757; }
+        .menu-item:hover { background: #f8f9fa; }
+        .menu-item i { width: 18px; color: #F67280; }
+        .menu-item:last-child i { color: #ff4757; }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* ─── WELCOME CARD — full-width gradient hero ─── */
+        .welcome-card {
+            background: linear-gradient(135deg, #F8B195 0%, #F67280 100%);
+            border-radius: 24px;
+            padding: 40px 48px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(246,114,128,0.35);
+            display: flex; justify-content: space-between;
+            align-items: center; gap: 24px; flex-wrap: wrap;
+            position: relative;
+            /* NO overflow:hidden — would clip dropdown */
+        }
+        /* Subtle decorative circles in background */
+        .welcome-card .w-deco1 {
+            position: absolute; top: -40px; right: 120px;
+            width: 180px; height: 180px; border-radius: 50%;
+            background: rgba(255,255,255,0.07); pointer-events: none;
+        }
+        .welcome-card .w-deco2 {
+            position: absolute; bottom: -30px; right: -30px;
+            width: 140px; height: 140px; border-radius: 50%;
+            background: rgba(255,255,255,0.06); pointer-events: none;
+        }
+        .welcome-left { flex: 1; min-width: 250px; position: relative; z-index: 1; }
+        .welcome-date {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2.5px;
+            color: rgba(255,255,255,0.7); margin-bottom: 10px;
+        }
+        .welcome-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 35px; font-weight: 700; color: white;
+            line-height: 1.2; margin-bottom: 10px;
+        }
+        .welcome-title em {
+            font-style: normal;
+            background: rgba(255,255,255,0.22);
+            padding: 0 6px; border-radius: 6px;
+        }
+        .welcome-sub {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 15px; color: rgba(255,255,255,0.82);
+            line-height: 1.6; margin-bottom: 18px;
+        }
+        .profile-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag {
+            background: rgba(255,255,255,0.2);
+            border: 1.5px solid rgba(255,255,255,0.35);
+            padding: 6px 14px; border-radius: 20px;
+            font-size: 14px; font-weight: 600; color: white;
+            font-family: 'Segoe UI', sans-serif;
+            backdrop-filter: blur(4px);
+        }
+
+        /* ─── SKIN FACT CARD — white card on the gradient background ─── */
+        .fact-card {
+            width: 300px; flex-shrink: 0;
+            background: rgba(255,255,255,0.18);
+            border: 1.5px solid rgba(255,255,255,0.35);
+            border-radius: 20px; padding: 24px 26px;
+            color: white; position: relative; z-index: 1;
+            cursor: default; backdrop-filter: blur(8px);
+        }
+        .fact-label {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 15px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2px;
+            opacity: 0.75; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .fact-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px; font-weight: 600;
+            line-height: 1.5; margin-bottom: 10px;
+        }
+        .fact-body {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 15px; line-height: 1.65;
+            opacity: 0.88;
+        }
+        .fact-nav {
+            display: flex; align-items: center; gap: 8px;
+            margin-top: 14px;
+        }
+        .fact-btn {
+            background: rgba(255,255,255,0.22); border: none;
+            color: white; width: 28px; height: 28px;
+            border-radius: 50%; cursor: pointer; font-size: 10px;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .fact-btn:hover { background: rgba(255,255,255,0.42); }
+        .fact-counter {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 11px; opacity: 0.65;
+        }
+
+        /* ─── WEATHER CARD (original style restored) ─── */
+        .weather-card {
+            background: white; border-radius: 20px;
+            padding: 28px 35px; margin-bottom: 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            display: flex; align-items: center;
+            justify-content: space-between;
+            gap: 20px; flex-wrap: wrap;
+            position: relative; overflow: hidden;
+        }
+        .weather-card::before {
+            content: ''; position: absolute;
+            left: 0; top: 0; bottom: 0; width: 5px;
+            background: linear-gradient(135deg, #F8B195, #F67280);
+            border-radius: 20px 0 0 20px;
+        }
+        .weather-left { display: flex; align-items: center; gap: 20px; }
+        .weather-icon-wrap {
+            width: 64px; height: 64px; border-radius: 16px;
+            background: linear-gradient(135deg, #F8B195, #F67280);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px; flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(246,114,128,0.3);
+        }
+        .weather-location {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 13px; color: #aaa; margin-bottom: 4px;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .weather-temp { font-size: 36px; font-weight: bold; color: #333; line-height: 1; margin-bottom: 4px; }
+        .weather-desc { font-family: 'Segoe UI', sans-serif; font-size: 14px; color: #888; text-transform: capitalize; }
+        .weather-stats { display: flex; gap: 25px; flex-wrap: wrap; }
+        .weather-stat { text-align: center; }
+        .weather-stat-value { font-size: 20px; font-weight: 700; color: #333; }
+        .weather-stat-label {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 11px; color: #aaa; text-transform: uppercase;
+            letter-spacing: 0.5px; margin-top: 2px;
+        }
+        .weather-tip {
+            width: 100%; margin-top: 16px; padding: 12px 18px;
+            border-radius: 12px; font-family: 'Segoe UI', sans-serif;
+            font-size: 13px; line-height: 1.6;
+            display: flex; align-items: flex-start; gap: 10px;
+        }
+        .weather-tip.tip-sun   { background: #fff9c4; color: #7b6200; }
+        .weather-tip.tip-hot   { background: #ffebee; color: #b71c1c; }
+        .weather-tip.tip-cold  { background: #e3f2fd; color: #0d47a1; }
+        .weather-tip.tip-humid { background: #e8f5e9; color: #1b5e20; }
+        .weather-tip.tip-ok    { background: #f3e5f5; color: #4a148c; }
+        .weather-tip i { margin-top: 2px; flex-shrink: 0; }
+        .spf-row {
+            width: 100%; margin-top: 12px; background: #fff0f3;
+            border-radius: 14px; padding: 16px 20px;
+            display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap;
+        }
+        .spf-badge {
+            background: linear-gradient(135deg, #F8B195, #F67280);
+            color: white; font-family: 'Segoe UI', sans-serif;
+            font-size: 12px; font-weight: 800; padding: 6px 14px;
+            border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+            box-shadow: 0 3px 10px rgba(246,114,128,0.3);
+        }
+        .spf-info { flex: 1; min-width: 180px; }
+        .spf-title { font-family: 'Segoe UI', sans-serif; font-size: 13px; font-weight: 700; color: #333; margin-bottom: 8px; }
+        .spf-products { display: flex; flex-wrap: wrap; gap: 8px; }
+        .spf-product {
+            background: white; border: 1.5px solid #ffd4dc;
+            border-radius: 20px; padding: 4px 12px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 12px; color: #F67280; font-weight: 600;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .spf-product .price-tag {
+            background: #fff9c4; color: #7b6200;
+            border-radius: 8px; padding: 1px 6px; font-size: 10px; font-weight: 700;
+        }
+        .weather-search {
+            width: 100%; display: flex; gap: 10px;
+            margin-top: 14px; align-items: center;
+        }
+        .weather-search input {
+            flex: 1; padding: 10px 16px; border: 2px solid #f0f0f0;
+            border-radius: 10px; font-family: 'Segoe UI', sans-serif;
+            font-size: 13px; outline: none; transition: border-color 0.3s;
+        }
+        .weather-search input:focus { border-color: #F67280; }
+        .weather-search button {
+            padding: 10px 18px; background: #F67280; color: white;
+            border: none; border-radius: 10px; cursor: pointer;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 13px; font-weight: 600; transition: background 0.3s;
+        }
+        .weather-search button:hover { background: #e55b6f; }
+        .weather-loading {
+            text-align: center; padding: 20px;
+            font-family: 'Segoe UI', sans-serif; font-size: 14px; color: #aaa; width: 100%;
+        }
+        .weather-loading .mini-spinner {
+            border: 3px solid #f3f3f3; border-top: 3px solid #F67280;
+            border-radius: 50%; width: 28px; height: 28px;
+            animation: spin 0.8s linear infinite; margin: 0 auto 10px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ─── SECTION LABEL ─── */
+        .section-label {
+            font-family: 'Segoe UI', sans-serif; font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2px;
+            color: white; opacity: 0.8; margin-bottom: 14px;
+        }
+
+        /* ─── FEATURE CARDS (original style, polished) ─── */
+        .features-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 24px; margin-bottom: 24px;
+        }
+        .feature-card {
+            background: white; border-radius: 22px; padding: 36px 38px;
+            box-shadow: 0 6px 28px rgba(0,0,0,0.10);
+            cursor: pointer; transition: all 0.3s;
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+        .feature-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 14px 44px rgba(0,0,0,0.16);
+        }
+        /* subtle pink top accent line */
+        .feature-card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, #F8B195, #F67280);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .feature-card:hover::before { opacity: 1; }
+
+        .feature-icon {
+            width: 64px; height: 64px; border-radius: 18px;
+            background: linear-gradient(135deg, #F8B195, #F67280);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; color: white; margin-bottom: 22px;
+            box-shadow: 0 6px 18px rgba(246,114,128,0.28);
+            flex-shrink: 0;
+        }
+        .feature-card h2 {
+            font-family: 'Playfair Display', serif;
+            color: #1a1a1a; font-size: 24px; margin-bottom: 10px; font-weight: 700;
+        }
+        .feature-card p {
+            color: #777; font-size: 14px; line-height: 1.75;
+            margin-bottom: 22px; font-family: 'Segoe UI', sans-serif;
+            flex: 1;
+        }
+        .feature-btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #F8B195, #F67280);
+            color: white; border: none; border-radius: 25px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: all 0.3s; font-family: 'Segoe UI', sans-serif;
+            box-shadow: 0 4px 14px rgba(246,114,128,0.3);
+            align-self: flex-start;
+        }
+        .feature-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(246,114,128,0.4);
+        }
+        .badge-new {
+            position: absolute; top: 18px; right: 18px;
+            background: linear-gradient(135deg, #F8B195, #F67280);
+            color: white; font-size: 10px; font-weight: 700;
+            padding: 4px 12px; border-radius: 12px;
+            font-family: 'Segoe UI', sans-serif; letter-spacing: 0.5px;
+        }
+
+        /* ─── FOOTER ─── */
+        .footer {
+            max-width: 1200px; margin: 32px auto 0;
+            padding: 20px; text-align: center; color: white;
+        }
+        .footer-links {
+            display: flex; justify-content: center; gap: 24px;
+            margin-bottom: 10px; flex-wrap: wrap;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .footer-link {
+            color: white; text-decoration: none;
+            font-size: 13px; font-weight: 500; opacity: 0.8; transition: opacity 0.3s;
+        }
+        .footer-link:hover { opacity: 1; text-decoration: underline; }
+        .footer-text { font-size: 12px; opacity: 0.65; font-family: 'Segoe UI', sans-serif; }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 1000px) { .features-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) {
+            body { padding: 14px; }
+            .welcome-card { padding: 26px 22px; }
+            .welcome-title { font-size: 24px; }
+            .fact-card { width: 100%; }
+            .top-bar { flex-direction: column; gap: 16px; align-items: stretch; }
+            .logo { text-align: center; }
+            .user-btn { justify-content: center; }
+            .weather-card { padding: 22px 20px; }
+            .feature-card { padding: 28px 26px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+    <div class="logo">GlowMate✨</div>
+    <div class="user-btn" onclick="toggleUserMenu()">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <span class="user-name" id="userName">Loading...</span>
+        <i class="fas fa-chevron-down" style="color:#bbb;font-size:11px;"></i>
+        <div class="user-menu" id="userMenu">
+            <div class="menu-item" onclick="editProfile()">
+                <i class="fas fa-user-edit"></i><span>Edit Profile</span>
+            </div>
+            <div class="menu-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- ══════════════════════════════
+         WELCOME + SKIN FACT
+    ══════════════════════════════ -->
+    <div class="welcome-card">
+        <!-- decorative background circles, pointer-events:none so they don't interfere -->
+        <div class="w-deco1"></div>
+        <div class="w-deco2"></div>
+        <div class="welcome-left">
+            <div class="welcome-date" id="welcomeDate"></div>
+            <h1 class="welcome-title">
+                Welcome back, <em id="welcomeName">there</em>! 👋
+            </h1>
+            <p class="welcome-sub" id="welcomeSub">
+                Your personalised AI skincare assistant is ready.
+            </p>
+            <div class="profile-tags" id="profileTags"></div>
+        </div>
+
+        <!-- ── SKIN FACT OF THE DAY ──────────────────────────
+              feature: rotating science-backed skin facts.
+             Fun, educational, personalised to skin type.
+             Starts on today's fact (day-of-year based).
+             User can browse with arrows.
+        ─────────────────────────────────────────────────── -->
+        <div class="fact-card">
+            <div class="fact-label">
+                <i class="fas fa-flask"></i> Skin Science Fact
+            </div>
+            <div class="fact-text" id="factTitle">Did you know?</div>
+            <div class="fact-body"  id="factBody">Loading...</div>
+            <div class="fact-nav">
+                <button class="fact-btn" onclick="prevFact()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="fact-counter" id="factCounter">1 / 1</span>
+                <button class="fact-btn" onclick="nextFact()">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         WEATHER CARD (original style)
+    ══════════════════════════════ -->
+    <div class="weather-card" id="weatherCard">
+        <div class="weather-loading" id="weatherLoading">
+            <div class="mini-spinner"></div>
+            Detecting your location for a personalised skin tip...
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         CORE FEATURES
+    ══════════════════════════════ -->
+    <div class="section-label">✦ Core Features</div>
+    <div class="features-grid" style="margin-bottom:28px">
+
+        <div class="feature-card" onclick="window.location.href='scanner.html'">
+            <div class="feature-icon"><i class="fas fa-camera"></i></div>
+            <h2>Scan Product</h2>
+            <p>Upload a photo of any skincare product's ingredient list and get an instant personalised score. See which ingredients are beneficial, cautionary, or risky for your specific skin type.</p>
+            <button class="feature-btn">
+                Start Scanning <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <div class="feature-card" onclick="window.location.href='ai-chat.html'">
+            <div class="feature-icon"><i class="fas fa-robot"></i></div>
+            <h2>AI Chat Assistant</h2>
+            <p>Have a question about ingredients, building a routine, or a skin concern? Chat with your personalised AI skincare expert — it knows your skin type and adapts every answer to you.</p>
+            <button class="feature-btn">
+                Chat Now <i class="fas fa-comments"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ══════════════════════════════
+         NEW FEATURES
+    ══════════════════════════════ -->
+    <div class="section-label">✦ Your Skin Journey</div>
+    <div class="features-grid">
+
+        <div class="feature-card" onclick="window.location.href='skin-diary.html'">
+            <div class="feature-icon"><i class="fas fa-book-open"></i></div>
+            <h2>My Skin Diary</h2>
+            <p>Start with your personalised AM and PM skincare routine, then log how your skin feels whenever you like — no strict schedule. Watch your progress on a chart and get AI-powered insights based on your own patterns.</p>
+            <button class="feature-btn">
+                Open Diary <i class="fas fa-pen"></i>
+            </button>
+        </div>
+
+        <div class="feature-card" onclick="window.location.href='know-your-skin.html'">
+
+            <div class="feature-icon"><i class="fas fa-graduation-cap"></i></div>
+            <h2>Know Your Skin</h2>
+            <p>Deep-dive into your skin type, learn which ingredients are backed by science, debunk skincare myths, and test your knowledge with 3 interactive quizzes — all personalised to your skin profile.</p>
+            <button class="feature-btn">
+                Start Learning <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    <div class="footer-links">
+        <a href="#" class="footer-link" onclick="showAbout();return false;">About Us</a>
+        <a href="#" class="footer-link" onclick="showTerms();return false;">Terms & Conditions</a>
+        <a href="#" class="footer-link" onclick="showPrivacy();return false;">Privacy Policy</a>
+    </div>
+    <div class="footer-text">© 2025 GlowMate. Your AI Skincare Assistant.</div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════
+const firebaseConfig = {
+    apiKey: "AIzaSyAfj-_lJznvocLDQyDiiZvtEUf9xa18B78",
+    authDomain: "glowmate-155a1.firebaseapp.com",
+    projectId: "glowmate-155a1",
+    storageBucket: "glowmate-155a1.firebasestorage.app",
+    messagingSenderId: "318839433654",
+    appId: "1:318839433654:web:c5ec16f4ab270e4a27f917"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+const WEATHER_API_KEY = CONFIG.WEATHER_API_KEY;
+
+let currentUser = null;
+let userProfile = null;
+let factIndex   = 0;
+let skinFacts   = [];
+
+// ═══════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════
+auth.onAuthStateChanged(async function(user) {
+    if (!user) { window.location.href = "index.html"; return; }
+    currentUser = user;
+
+    document.getElementById("userName").textContent    = user.email.split("@")[0];
+    document.getElementById("welcomeName").textContent = user.email.split("@")[0];
+    document.getElementById("userAvatar").textContent  = user.email.charAt(0).toUpperCase();
+
+    try {
+        const userDoc = await db.collection("users").doc(user.uid).get();
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            if (!userData.skinProfile || !userData.skinProfile.completed) {
+                window.location.href = "profile-setup.html"; return;
+            }
+            userProfile = userData.skinProfile;
+            renderWelcome(userData);
+        } else {
+            window.location.href = "profile-setup.html";
+        }
+    } catch(e) { console.error("Profile error:", e); }
+
+    initWeather();
+});
+
+// ═══════════════════════════════════════════════════
+// WELCOME SECTION
+// ═══════════════════════════════════════════════════
+function renderWelcome(userData) {
+    const firstName = userData.name ? userData.name.split(" ")[0] : "there";
+    document.getElementById("userAvatar").textContent  = firstName.charAt(0).toUpperCase();
+    document.getElementById("userName").textContent    = userData.name || "User";
+    document.getElementById("welcomeName").textContent = firstName;
+
+    // Today's date
+    const now = new Date();
+    document.getElementById("welcomeDate").textContent =
+        now.toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
+
+    // Sub-line personalised to skin type
+    const skin = userProfile?.skinType || "your";
+    document.getElementById("welcomeSub").textContent =
+        "Your " + skin.charAt(0).toUpperCase() + skin.slice(1) + " skin guide is ready — what would you like to explore today?";
+
+    // Tags
+    const tagsEl = document.getElementById("profileTags");
+    tagsEl.innerHTML = "";
+    if (userProfile) {
+        if (userProfile.skinType)
+            addTag(userProfile.skinType.charAt(0).toUpperCase() + userProfile.skinType.slice(1) + " Skin");
+        if (userProfile.ageRange) {
+            const m = { teen:"13-19", "young-adult":"20-29", adult:"30-45", mature:"46+" };
+            addTag(m[userProfile.ageRange] || userProfile.ageRange);
+        }
+        (userProfile.concerns || []).slice(0,3).forEach(c =>
+            addTag(c.charAt(0).toUpperCase() + c.slice(1))
+        );
+        if (userProfile.pregnant)      addTag("Pregnant");
+        if (userProfile.breastfeeding) addTag("Breastfeeding");
+    }
+
+    buildFacts();
+}
+
+function addTag(text) {
+    const t = document.createElement("div");
+    t.className = "tag"; t.textContent = text;
+    document.getElementById("profileTags").appendChild(t);
+}
+
+// ═══════════════════════════════════════════════════
+// SKIN SCIENCE FACTS — new feature
+//
+// Fun, surprising, science-based skin facts.
+// NOT advice — just fascinating things about skin.
+// Personalised a little by skin type but mostly
+// universal facts anyone would find interesting.
+// Starts on today's fact so it feels "daily".
+// ═══════════════════════════════════════════════════
+function buildFacts() {
+    const skin     = userProfile?.skinType || "normal";
+    const concerns = (userProfile?.concerns || []).map(c => c.toLowerCase());
+    const hasAcne  = concerns.some(c => ["acne","breakouts"].includes(c));
+
+    // Universal skin science facts — fun, not advice
+    const FACTS = [
+        {
+            t: "Your skin is your body's largest organ.",
+            b: "It accounts for about 15% of your total body weight and covers approximately 1.5 to 2 square metres. It is doing about 7 different jobs for you right now — simultaneously."
+        },
+        {
+            t: "Your skin completely renews itself every 4 to 6 weeks.",
+            b: "You shed around 30,000 to 40,000 dead skin cells every hour. The skin you have today did not exist two months ago. This is why consistent skincare takes time — you are waiting for a full cycle of new cells to surface."
+        },
+        {
+            t: "Your skin has its own microbiome.",
+            b: "Billions of bacteria, fungi, and viruses live on your skin surface. This is not a bad thing — they form a protective shield against harmful pathogens. Over-cleansing disrupts this ecosystem and is one of the leading causes of sensitive, reactive skin."
+        },
+        {
+            t: "UV damage is responsible for 80% of visible facial aging.",
+            b: "A famous study of identical twins showed that the twin who used sunscreen regularly looked significantly younger. Photoaging — not chronological aging — is the primary driver of wrinkles, dark spots, and loss of elasticity."
+        },
+        {
+            t: "Your skin can absorb some things — but not everything.",
+            b: "Skin is a selective barrier. Small molecules like niacinamide, hyaluronic acid, and retinol can penetrate when formulated correctly. Large molecules like collagen (found in collagen creams) are too big to pass through the outer layer — this is why topical collagen has no direct collagen-building effect."
+        },
+        {
+            t: "The skin around your eyes is 0.5mm thin.",
+            b: "The rest of your face averages 2mm thick. This is why the eye area shows aging first — it has less structural support, fewer sebaceous glands, and moves thousands of times a day with expressions. It genuinely needs gentler treatment."
+        },
+        {
+            t: "Your skin produces its own natural moisturiser.",
+            b: "The Natural Moisturising Factor (NMF) is a collection of amino acids, lactic acid, sugars, and other compounds found naturally in the top layers of skin. It is what keeps healthy skin soft without any products. Harsh cleansers dissolve it, which is why skin feels tight after some washes."
+        },
+        {
+            t: "Stress shows up on your skin within 48 hours.",
+            b: "Cortisol (the stress hormone) directly stimulates sebaceous glands to produce more oil, disrupts the skin barrier, and slows the healing of existing breakouts. Skin and the nervous system share the same embryological origin — they are genuinely connected."
+        },
+        {
+            t: "Your fingertips have no sebaceous glands.",
+            b: "This is why your fingertips get so dry in cold weather. Areas of skin with no oil glands — including the lips — cannot self-moisturise at all and are entirely dependent on topical products and the environment."
+        },
+        {
+            t: "Skin colour is determined by just one pigment.",
+            b: "Melanin is the single pigment responsible for all human skin tones, from the palest to the deepest. The difference is not the type of melanocyte (pigment cell) — everyone has roughly the same number. It is the size, distribution, and activity level of those cells that varies."
+        },
+    ];
+
+    // A couple of skin-type specific fun facts
+    if (skin === "oily") {
+        FACTS.push({ t:"Oily skin tends to age more slowly.", b:"Higher sebum production keeps the skin naturally moisturised and plump. Studies show people with oily skin develop fine lines and wrinkles later on average. The sebum that feels inconvenient in your 20s becomes an advantage in your 40s." });
+    }
+    if (skin === "dry") {
+        FACTS.push({ t:"Dry skin loses water 75 times faster than normal skin.", b:"Transepidermal water loss (TEWL) in clinically dry skin can be dramatically higher than in intact skin barriers. This is why the sequence of your routine matters — humectants first, occlusives last to lock everything in." });
+    }
+    if (hasAcne) {
+        FACTS.push({ t:"The bacteria linked to acne is actually found on everyone's skin.", b:"C. acnes bacteria lives on all skin types — including people who never break out. The difference is not presence of the bacteria but the environment: excess sebum, blocked follicles, and an overactive immune response determine whether a breakout occurs." });
+    }
+
+    skinFacts = FACTS;
+
+    // Start on today's fact based on day of year
+    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+    factIndex = dayOfYear % skinFacts.length;
+    renderFact();
+}
+
+function renderFact() {
+    const f = skinFacts[factIndex];
+    if (!f) return;
+    document.getElementById("factTitle").textContent   = f.t;
+    document.getElementById("factBody").textContent    = f.b;
+    document.getElementById("factCounter").textContent = (factIndex + 1) + " / " + skinFacts.length;
+}
+function nextFact() { factIndex = (factIndex + 1) % skinFacts.length; renderFact(); }
+function prevFact() { factIndex = (factIndex - 1 + skinFacts.length) % skinFacts.length; renderFact(); }
+
+// ═══════════════════════════════════════════════════
+// WEATHER — original card style
+// ═══════════════════════════════════════════════════
+function initWeather() {
+    if (!navigator.geolocation) { showWeatherSearch("GPS not available."); return; }
+    navigator.geolocation.getCurrentPosition(
+        pos => fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude),
+        ()  => showWeatherSearch("Location access denied.")
+    );
+}
+async function fetchWeatherByCoords(lat, lon) {
+    await fetchAndRenderWeather(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${WEATHER_API_KEY}`
+    );
+}
+async function fetchWeatherByCity(city) {
+    if (!city.trim()) return;
+    document.getElementById("weatherCard").innerHTML =
+        `<div class="weather-loading"><div class="mini-spinner"></div>Fetching weather for ${city}...</div>`;
+    await fetchAndRenderWeather(
+        `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${WEATHER_API_KEY}`
+    );
+}
+async function fetchAndRenderWeather(url) {
+    try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(res.status === 404 ? "City not found." : "Weather service error.");
+        renderWeather(await res.json());
+    } catch(e) { showWeatherSearch(e.message); }
+}
+
+function renderWeather(data) {
+    const temp      = Math.round(data.main.temp);
+    const humidity  = data.main.humidity;
+    const desc      = data.weather[0].description;
+    const weatherId = data.weather[0].id;
+    const city      = data.name;
+    const country   = data.sys.country;
+    const icon      = getWeatherEmoji(weatherId, temp);
+    const { tip, tipClass }             = getSkinTip(temp, humidity, weatherId);
+    const { spfLevel, spfReason, products } = getSunscreenRec(temp, humidity, weatherId);
+
+    document.getElementById("weatherCard").innerHTML = `
+        <div class="weather-left">
+            <div class="weather-icon-wrap">${icon}</div>
+            <div>
+                <div class="weather-location">
+                    <i class="fas fa-map-marker-alt" style="color:#F67280;font-size:11px"></i>
+                    ${city}, ${country}
+                </div>
+                <div class="weather-temp">${temp}°C</div>
+                <div class="weather-desc">${desc}</div>
+            </div>
+        </div>
+        <div class="weather-stats">
+            <div class="weather-stat">
+                <div class="weather-stat-value"><i class="fas fa-tint" style="color:#64b5f6;font-size:16px"></i> ${humidity}%</div>
+                <div class="weather-stat-label">Humidity</div>
+            </div>
+            <div class="weather-stat">
+                <div class="weather-stat-value"><i class="fas fa-wind" style="color:#90a4ae;font-size:16px"></i> ${Math.round(data.wind.speed)}m/s</div>
+                <div class="weather-stat-label">Wind</div>
+            </div>
+            <div class="weather-stat">
+                <div class="weather-stat-value" style="color:#F67280;font-weight:800">SPF ${spfLevel}</div>
+                <div class="weather-stat-label">Needed today</div>
+            </div>
+        </div>
+        <div class="weather-tip ${tipClass}">
+            <i class="fas fa-lightbulb"></i><span>${tip}</span>
+        </div>
+        <div class="spf-row">
+            <div class="spf-badge">☀️ SPF ${spfLevel}</div>
+            <div class="spf-info">
+                <div class="spf-title">Today's sunscreen picks for your ${(userProfile?.skinType || "skin")} skin — ${spfReason}</div>
+                <div class="spf-products">
+                    ${products.map(p => `<div class="spf-product">${p.name}<span class="price-tag">${p.price}</span></div>`).join("")}
+                </div>
+            </div>
+        </div>
+        <div class="weather-search">
+            <input type="text" id="cityInput" placeholder="Search a different city..."
+                onkeypress="if(event.key==='Enter') fetchWeatherByCity(document.getElementById('cityInput').value)">
+            <button onclick="fetchWeatherByCity(document.getElementById('cityInput').value)">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </div>`;
+}
+
+function showWeatherSearch(reason) {
+    document.getElementById("weatherCard").innerHTML = `
+        <div style="width:100%">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+                <div class="weather-icon-wrap" style="width:50px;height:50px;font-size:22px">
+                    <i class="fas fa-cloud" style="color:white"></i>
+                </div>
+                <div>
+                    <div style="font-size:15px;font-weight:600;color:#333;font-family:'Segoe UI',sans-serif">Today's Weather and Skin Tip</div>
+                    <div style="font-size:13px;color:#aaa;font-family:'Segoe UI',sans-serif">${reason} Enter your city below.</div>
+                </div>
+            </div>
+            <div class="weather-search">
+                <input type="text" id="cityInput" placeholder="e.g. Dubai, Mumbai, London..."
+                    onkeypress="if(event.key==='Enter') fetchWeatherByCity(document.getElementById('cityInput').value)">
+                <button onclick="fetchWeatherByCity(document.getElementById('cityInput').value)">
+                    <i class="fas fa-search"></i> Get Weather
+                </button>
+            </div>
+        </div>`;
+}
+
+function getWeatherEmoji(id, temp) {
+    if (id >= 200 && id < 300) return "⛈️";
+    if (id >= 300 && id < 400) return "🌦️";
+    if (id >= 500 && id < 600) return "🌧️";
+    if (id >= 600 && id < 700) return "❄️";
+    if (id >= 700 && id < 800) return "🌫️";
+    if (id === 800) return temp > 30 ? "☀️" : "🌤️";
+    if (id > 800)   return "☁️";
+    return "🌡️";
+}
+
+function getSkinTip(temp, humidity, weatherId) {
+    const skin = userProfile?.skinType || "normal";
+    const isRaining = weatherId >= 500 && weatherId < 600;
+    const isSunny   = weatherId === 800;
+    if (isSunny && temp > 28) return { tip:`☀️ Strong sun today — UV is at its peak. Apply SPF before going out and reapply every 2 hours. ${skin==="oily"?"A gel or fluid SPF won't feel heavy on your skin.":skin==="sensitive"?"Stick to a mineral sunscreen to avoid UV filter reactions.":"Broad-spectrum SPF 50 is essential today."}`, tipClass:"tip-sun" };
+    if (temp > 35)             return { tip:`🔥 Extreme heat today — your skin loses moisture faster than usual. ${skin==="dry"?"Layer a hydrating serum before your moisturiser.":"Keep a facial mist with you and stay well hydrated."}`, tipClass:"tip-hot" };
+    if (humidity > 75)         return { tip:`💧 High humidity today. ${skin==="oily"||skin==="combination"?"Your T-zone may feel greasier — blotting paper will help.":"Swap a cream moisturiser for a lightweight gel formula today."}`, tipClass:"tip-humid" };
+    if (temp < 15)             return { tip:`🧣 Cold weather strips moisture from your skin barrier. ${skin==="dry"||skin==="sensitive"?"Use a richer cream and seal it in with a facial oil if you have one.":"Switch to a cream cleanser and slightly heavier moisturiser in the cold."}`, tipClass:"tip-cold" };
+    if (isRaining)             return { tip:`🌧️ Rainy days don't mean UV-free — rays still penetrate cloud cover. Don't skip SPF today. ${skin==="sensitive"?"Rain and city pollution can irritate sensitive skin — double cleanse tonight.":"A thorough double-cleanse tonight will clear any pollution from the day."}`, tipClass:"tip-ok" };
+    return { tip:`✨ Great skin conditions today! ${skin==="oily"?"Keep it light and don't skip SPF.":skin==="dry"?"Apply your moisturiser and SPF and you're set for the day.":"Stick to your regular routine — consistency is the real secret."}`, tipClass:"tip-ok" };
+}
+
+function getSunscreenRec(temp, humidity, weatherId) {
+    const skin = userProfile?.skinType || "normal";
+    const isSunny = weatherId === 800, isHot = temp > 28, isCold = temp < 15, isRain = weatherId >= 500 && weatherId < 600;
+    const spfLevel  = (isSunny && isHot) ? "50+" : (isCold || isRain || weatherId > 800) ? "30" : "50";
+    const spfReason = (isSunny && isHot) ? "strong sun, max protection needed" : (isCold || isRain) ? "UV still present" : "solid protection for today";
+    const recs = {
+        oily:        [{ name:"La Roche-Posay Anthelios Invisible Fluid SPF 50+", price:"$$"},{ name:"Neutrogena Ultra Sheer Dry-Touch SPF 50", price:"$"},{ name:"Bioré UV Aqua Rich Watery Essence SPF 50+", price:"$"}],
+        combination: [{ name:"La Roche-Posay Anthelios Invisible Fluid SPF 50+", price:"$$"},{ name:"Neutrogena Ultra Sheer SPF 50", price:"$"},{ name:"The Ordinary Mineral UV Filters SPF 30", price:"$"}],
+        dry:         [{ name:"Altruist Moisturising Sun Cream SPF 50", price:"$"},{ name:"CeraVe Hydrating Mineral Sunscreen SPF 50", price:"$"},{ name:"Kiehl's Ultra Light Daily UV Defense SPF 50", price:"$$"}],
+        sensitive:   [{ name:"CeraVe Hydrating Mineral Sunscreen SPF 50", price:"$"},{ name:"La Roche-Posay Anthelios Mineral SPF 50+", price:"$$"},{ name:"Altruist Dermatologist SPF 50 fragrance-free", price:"$"}],
+        normal:      [{ name:"La Roche-Posay Anthelios Ultra-Light SPF 50+", price:"$$"},{ name:"Neutrogena Ultra Sheer SPF 50", price:"$"},{ name:"The Ordinary Mineral UV Filters SPF 30", price:"$"}],
+    };
+    return { spfLevel, spfReason, products: (recs[skin] || recs.normal).slice(0,3) };
+}
+
+// ═══════════════════════════════════════════════════
+// USER MENU
+// ═══════════════════════════════════════════════════
+function toggleUserMenu() {
+    document.getElementById("userMenu").classList.toggle("show");
+    event.stopPropagation();
+}
+document.addEventListener("click", function(e) {
+    const btn = document.querySelector(".user-btn");
+    if (btn && !btn.contains(e.target)) document.getElementById("userMenu").classList.remove("show");
+});
+function editProfile() { window.location.href = "profile-setup.html"; }
+async function logout() {
+    if (confirm("Are you sure you want to logout?")) {
+        try { await auth.signOut(); window.location.href = "index.html"; }
+        catch(e) { alert("Error logging out. Please try again."); }
+    }
+}
+
+// ═══════════════════════════════════════════════════
+// FOOTER
+// ═══════════════════════════════════════════════════
+function showAbout()   { alert("ABOUT GLOWMATE\n\nGlowMate is your personal AI-powered skincare assistant.\nThis is a university final-year project combining AI, OCR, and web development."); }
+function showTerms()   { alert("TERMS & CONDITIONS\n\nThis is an educational tool, not medical advice.\nAlways consult a dermatologist for serious skin concerns.\n\nLast updated: December 2025"); }
+function showPrivacy() { alert("PRIVACY POLICY\n\nWe collect your email, name, and skin profile for personalised recommendations only.\nWe do not sell or share your data.\n\nLast updated: December 2025"); }
+</script>
+</body>
+</html>

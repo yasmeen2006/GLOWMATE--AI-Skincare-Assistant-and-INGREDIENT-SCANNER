@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlowMate — My Skin Diary</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+
+    <style>
+        /* =============================================
+           DESIGN DIRECTION: Editorial journal.
+           Playfair Display = warm, literary headings.
+           DM Sans = clean modern body text.
+           Warm off-white background. Pink as accent only.
+           No card overload — space and typography do the work.
+        ============================================= */
+        :root {
+            --pink:        #F67280;
+            --pink-light:  #F8B195;
+            --pink-pale:   #fff0f3;
+            --pink-border: #ffd4dc;
+            --ink:         #333;
+            --ink-soft:    #555;
+            --ink-muted:   #888;
+            --ink-ghost:   #bbb;
+            --bg:          white;
+            --line:        #f0f0f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #F8B195 0%, #F67280 100%);
+            min-height: 100vh;
+        }
+
+        /* ── TOP BAR ── */
+        .top-bar {
+            background: linear-gradient(135deg, #F8B195 0%, #F67280 100%);
+            padding: 18px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: white; }
+        .btn-back {
+             padding:10px 20px;background:white;color:#F67280;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;font-family:'Segoe UI',sans-serif;transition:background .3s}
+        .btn-back:hover{background:#fff0f3}
+            
+          .btn-back:hover { background: rgba(255,255,255,0.35); }
+
+        /* ── PAGE CONTAINER — white card like rest of GlowMate ── */
+        .page {
+            max-width: 860px;
+            margin: 30px auto;
+            padding: 50px 48px 80px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+        }
+
+        /* ── DIVIDER (replaces cards as section separator) ── */
+        .divider { border: none; border-top: 1px solid var(--line); margin: 44px 0; }
+
+        /* ── SECTION TITLE ── */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px; font-weight: 600; color: var(--ink); margin-bottom: 6px;
+        }
+        .section-sub { font-size: 14px; color: var(--ink-muted); margin-bottom: 28px; font-weight: 300; }
+
+        /* ── LOADING ── */
+        #loadingScreen { text-align: center; padding: 80px 20px; }
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid var(--line); border-top-color: var(--pink);
+            border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #loadingScreen p { color: var(--ink-muted); font-size: 14px; }
+
+        /* =============================================
+           WELCOME SCREEN
+        ============================================= */
+        .welcome-eyebrow {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 2.5px; color: var(--pink); margin-bottom: 16px;
+        }
+        .welcome-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px; line-height: 1.2; font-weight: 700;
+            color: var(--ink); margin-bottom: 20px;
+        }
+        .welcome-body {
+            font-size: 16px; color: var(--ink-soft); line-height: 1.8;
+            font-weight: 300; max-width: 560px; margin-bottom: 36px;
+        }
+        .btn-generate {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 16px 36px; background: var(--pink);
+            color: white; border: none; border-radius: 50px;
+            font-size: 15px; font-weight: 600; font-family: 'Segoe UI', sans-serif;
+            cursor: pointer; transition: all 0.3s;
+            box-shadow: 0 8px 24px rgba(246,114,128,0.3);
+        }
+        .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(246,114,128,0.4); }
+        .btn-generate:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+        /* Generating spinner */
+        #generatingScreen { text-align: center; padding: 60px 0; display: none; }
+        #generatingScreen .spinner { margin: 0 auto 20px; }
+        #generatingScreen h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--ink); margin-bottom: 8px; }
+        #generatingScreen p { color: var(--ink-muted); font-size: 14px; }
+
+        /* =============================================
+           JOURNAL HEADER
+        ============================================= */
+        .journal-date {
+            font-size: 12px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 2px; color: var(--pink); margin-bottom: 10px;
+        }
+        .journal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 44px; font-weight: 700; color: var(--ink);
+            line-height: 1.15; margin-bottom: 10px;
+        }
+        .journal-subtitle { font-size: 15px; color: var(--ink-muted); font-weight: 300; margin-bottom: 40px; }
+
+        /* =============================================
+           STREAK SECTION
+        ============================================= */
+        .streak-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+        .streak-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 72px; font-weight: 700; color: var(--pink); line-height: 1;
+        }
+        .streak-text h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--ink); margin-bottom: 5px; }
+        .streak-text p  { font-size: 14px; color: var(--ink-muted); font-weight: 300; line-height: 1.6; }
+        .streak-dots { display: flex; gap: 8px; margin-top: 20px; align-items: center; }
+        .streak-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--line); transition: background 0.3s; }
+        .streak-dot.logged { background: var(--pink); }
+        .streak-dot.today  { background: var(--ink); }
+        .streak-dots-label { font-size: 11px; color: var(--ink-ghost); font-weight: 500; margin-left: 4px; }
+
+        /* =============================================
+           LOG FORM — journal style, no cards
+        ============================================= */
+        .q-label {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px; font-weight: 600; color: var(--ink);
+            margin-bottom: 18px; line-height: 1.3;
+        }
+
+        /* Emoji feel buttons */
+        .feel-row { display: flex; gap: 12px; margin-bottom: 36px; flex-wrap: wrap; }
+        .feel-btn {
+            flex: 1; min-width: 70px; padding: 18px 10px;
+            background: white; border: 2px solid var(--line);
+            border-radius: 16px; cursor: pointer; text-align: center; transition: all 0.2s;
+        }
+        .feel-btn .em  { font-size: 28px; display: block; margin-bottom: 6px; }
+        .feel-btn .lbl { font-size: 11px; color: var(--ink-muted); font-weight: 500; font-family: 'Segoe UI', sans-serif; }
+        .feel-btn:hover { border-color: var(--pink); background: var(--pink-pale); transform: translateY(-2px); }
+        .feel-btn.selected { border-color: var(--pink); background: var(--pink-pale); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(246,114,128,0.18); }
+        .feel-btn.selected .lbl { color: var(--pink); font-weight: 600; }
+
+        /* Chip selectors */
+        .chip-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 36px; }
+        .chip {
+            padding: 11px 22px; background: white;
+            border: 2px solid var(--line); border-radius: 50px; cursor: pointer;
+            font-family: 'Segoe UI', sans-serif; font-size: 14px; font-weight: 500;
+            color: var(--ink-soft); transition: all 0.2s;
+        }
+        .chip:hover { border-color: var(--pink); color: var(--pink); background: var(--pink-pale); }
+        .chip.selected { border-color: var(--pink); color: var(--pink); background: var(--pink-pale); font-weight: 600; }
+
+        /* Note input — looks like a real notebook line */
+        .note-wrap { margin-bottom: 36px; }
+        .note-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ink-muted); margin-bottom: 10px; }
+        .note-input {
+            width: 100%; background: transparent; border: none;
+            border-bottom: 2px solid var(--line); padding: 10px 0;
+            font-family: 'Segoe UI', sans-serif; font-size: 16px; color: var(--ink);
+            outline: none; transition: border-color 0.3s; resize: none;
+        }
+        .note-input:focus { border-bottom-color: var(--pink); }
+        .note-input::placeholder { color: var(--ink-ghost); }
+
+        /* Submit button — matches GlowMate pink style */
+        .btn-submit {
+            display: flex; align-items: center; gap: 10px;
+            padding: 16px 40px;
+            background: #F67280;
+            color: white; border: none; border-radius: 50px;
+            font-family: 'Segoe UI', sans-serif; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(246,114,128,0.3);
+        }
+        .btn-submit:hover { background: #e55b6f; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(246,114,128,0.4); }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* =============================================
+           POST LOG — editorial strip
+        ============================================= */
+        #postLogSection {
+            padding: 32px 0;
+            border-top: 2px solid var(--pink-pale);
+            border-bottom: 2px solid var(--pink-pale);
+            margin-bottom: 44px; display: none;
+        }
+        .post-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--pink); margin-bottom: 10px; }
+        .post-message { font-family: 'Playfair Display', serif; font-size: 24px; font-style: italic; color: var(--ink); line-height: 1.5; margin-bottom: 14px; max-width: 520px; }
+        .post-fact { font-size: 14px; color: var(--ink-soft); line-height: 1.7; max-width: 480px; margin-bottom: 24px; }
+        .btn-log-again {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 12px 28px; background: transparent; color: var(--pink);
+            border: 2px solid var(--pink); border-radius: 50px; cursor: pointer;
+            font-family: 'Segoe UI', sans-serif; font-size: 14px; font-weight: 600; transition: all 0.25s;
+        }
+        .btn-log-again:hover { background: var(--pink); color: white; }
+
+        /* =============================================
+           PROGRESS CHART — big and generous
+        ============================================= */
+        .chart-container { position: relative; height: 320px; margin-top: 8px; }
+        .no-data-msg { padding: 48px 0; color: var(--ink-ghost); font-size: 14px; font-style: italic; }
+
+        /* =============================================
+           AI INSIGHT — typography-led
+        ============================================= */
+        .insight-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--pink); margin-bottom: 14px; }
+        .insight-quote {
+            font-family: 'Playfair Display', serif; font-size: 19px; font-style: italic;
+            color: var(--ink); line-height: 1.7;
+            border-left: 3px solid var(--pink); padding-left: 20px; max-width: 580px;
+        }
+        .insight-loading { display: flex; align-items: center; gap: 12px; color: var(--ink-muted); font-size: 14px; }
+        .insight-loading .spinner { margin: 0; width: 20px; height: 20px; border-width: 2px; }
+
+        /* =============================================
+           ROUTINE FOOTER BUTTON
+        ============================================= */
+        .routine-footer { border-top: 1px solid var(--line); padding-top: 44px; margin-top: 20px; }
+        .routine-footer-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--ink-muted); margin-bottom: 12px; }
+        .routine-footer h3 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--ink); margin-bottom: 8px; }
+        .routine-footer p { font-size: 14px; color: var(--ink-muted); line-height: 1.7; margin-bottom: 20px; font-weight: 300; }
+        .btn-see-routine {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 14px 32px; background: var(--pink-pale); color: var(--pink);
+            border: 2px solid var(--pink-border); border-radius: 50px; cursor: pointer;
+            font-family: 'Segoe UI', sans-serif; font-size: 14px; font-weight: 600; transition: all 0.3s;
+        }
+        .btn-see-routine:hover { background: var(--pink); color: white; border-color: var(--pink); }
+
+        /* =============================================
+           ROUTINE PAGE
+        ============================================= */
+        .routine-tabs { display: flex; border-bottom: 2px solid var(--line); margin-bottom: 32px; }
+        .rtab {
+            padding: 14px 28px; background: transparent; border: none;
+            font-family: 'Segoe UI', sans-serif; font-size: 15px; font-weight: 500;
+            color: var(--ink-muted); cursor: pointer;
+            border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.25s;
+        }
+        .rtab.active { color: var(--pink); border-bottom-color: var(--pink); font-weight: 600; }
+
+        .routine-step { display: flex; gap: 20px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+        .routine-step:last-child { border-bottom: none; }
+        .step-num {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--pink-pale); color: var(--pink);
+            font-size: 13px; font-weight: 700; font-family: 'Segoe UI', sans-serif;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; margin-top: 2px; border: 1.5px solid var(--pink-border);
+        }
+        .step-body { flex: 1; }
+        .step-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--pink); margin-bottom: 4px; }
+        .step-product { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+        .step-why { font-size: 14px; color: var(--ink-muted); line-height: 1.6; margin-bottom: 10px; }
+        .step-brands { display: flex; gap: 8px; flex-wrap: wrap; }
+        .brand-tag { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; font-family: 'Segoe UI', sans-serif; }
+        .brand-tag.budget   { background: #e8f5e9; color: #2e7d32; }
+        .brand-tag.midrange { background: #e3f2fd; color: #0d47a1; }
+
+        .btn-regen {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 12px 26px; margin-top: 32px;
+            background: transparent; color: var(--ink-muted);
+            border: 1.5px solid var(--line); border-radius: 50px; cursor: pointer;
+            font-family: 'Segoe UI', sans-serif; font-size: 13px; font-weight: 500; transition: all 0.25s;
+        }
+        .btn-regen:hover { border-color: var(--pink); color: var(--pink); }
+
+        .btn-back-diary {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 20px; margin-bottom: 32px;
+            background: white; color: #F67280;
+            border: none; border-radius: 8px; cursor: pointer;
+            font-family: 'Segoe UI', sans-serif; font-size: 14px; font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.2s;
+        }
+        .btn-back-diary:hover { background: #fff0f3; }
+
+        /* =============================================
+           RESPONSIVE
+        ============================================= */
+        @media (max-width: 640px) {
+            .page { padding: 28px 20px 60px; margin: 16px; }
+            .journal-title { font-size: 32px; }
+            .feel-btn { min-width: 56px; padding: 14px 6px; }
+            .feel-btn .em { font-size: 22px; }
+            .streak-number { font-size: 52px; }
+            .chart-container { height: 240px; }
+            .top-bar { padding: 16px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="logo">GlowMate✨</div>
+    <button class="btn-back" onclick="window.location.href='dashboard.html'">← Back toDashboard</button>
+</div>
+
+<div class="page">
+
+    <!-- LOADING -->
+    <div id="loadingScreen">
+        <div class="spinner"></div>
+        <p>Opening your diary...</p>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         WELCOME — first time only
+    ═══════════════════════════════════ -->
+    <div id="welcomeScreen" style="display:none;">
+        <div class="welcome-eyebrow">Welcome</div>
+        <h1 class="welcome-heading">Your skin has<br>a story to tell.</h1>
+        <p class="welcome-body">
+            This is your personal space to track how your skin feels over time,
+            understand what's working, and build habits that are genuinely yours.
+            No pressure — log whenever it feels right.
+            <br><br>
+            First, let's build your personalised skincare routine.
+        </p>
+        <button class="btn-generate" id="generateBtn" onclick="generateRoutine()">
+            Generate My Routine
+        </button>
+    </div>
+
+    <!-- Generating spinner -->
+    <div id="generatingScreen">
+        <div class="spinner"></div>
+        <h3>Building your routine...</h3>
+        <p>Personalising for your skin type — about 10 seconds</p>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         MAIN DIARY PAGE
+    ═══════════════════════════════════ -->
+    <div id="mainDiary" style="display:none;">
+
+        <!-- Header -->
+        <div class="journal-date" id="todayDate"></div>
+        <h1 class="journal-title">My Skin Diary</h1>
+        <p class="journal-subtitle" id="diarySubtitle"></p>
+
+        <!-- Streak -->
+        <div id="streakSection" style="display:none;">
+            <div class="streak-row">
+                <div class="streak-number" id="streakCount">0</div>
+                <div class="streak-text">
+                    <h3 id="streakTitle">Day streak</h3>
+                    <p id="streakDesc"></p>
+                </div>
+            </div>
+            <div class="streak-dots" id="streakDots"></div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Post-log message (shown after saving) -->
+        <div id="postLogSection">
+            <div class="post-eyebrow" id="postEyebrow"></div>
+            <div class="post-message" id="postMessage"></div>
+            <p class="post-fact" id="postFact"></p>
+            <button class="btn-log-again" onclick="showLogForm()">+ Log another entry</button>
+        </div>
+
+        <!-- Log form -->
+        <section id="logFormSection" style="display:none;">
+
+            <div class="q-label">How does your skin feel right now?</div>
+            <div class="feel-row" id="q1">
+                <div class="feel-btn" onclick="selectFeel(1,this)"><span class="em">😫</span><span class="lbl">Terrible</span></div>
+                <div class="feel-btn" onclick="selectFeel(2,this)"><span class="em">😕</span><span class="lbl">Not great</span></div>
+                <div class="feel-btn" onclick="selectFeel(3,this)"><span class="em">😐</span><span class="lbl">Okay</span></div>
+                <div class="feel-btn" onclick="selectFeel(4,this)"><span class="em">🙂</span><span class="lbl">Good</span></div>
+                <div class="feel-btn" onclick="selectFeel(5,this)"><span class="em">✨</span><span class="lbl">Glowing</span></div>
+            </div>
+
+            <div class="q-label">Did you follow your skincare routine?</div>
+            <div class="chip-row" id="q2">
+                <div class="chip" onclick="selectChip('q2','full',this)">Full routine</div>
+                <div class="chip" onclick="selectChip('q2','partial',this)">Did half</div>
+                <div class="chip" onclick="selectChip('q2','skipped',this)">Skipped it</div>
+            </div>
+
+            <div class="q-label">How's your stress level today?</div>
+            <div class="chip-row" id="q3">
+                <div class="chip" onclick="selectChip('q3',1,this)">Really calm</div>
+                <div class="chip" onclick="selectChip('q3',2,this)">Fine</div>
+                <div class="chip" onclick="selectChip('q3',3,this)">A bit stressed</div>
+                <div class="chip" onclick="selectChip('q3',4,this)">Very stressed</div>
+            </div>
+
+            <div class="q-label">Any skin concerns today?</div>
+            <div class="chip-row" id="q4">
+                <div class="chip" onclick="toggleConcern('breakout',this)">Breakout</div>
+                <div class="chip" onclick="toggleConcern('dryness',this)">Dryness</div>
+                <div class="chip" onclick="toggleConcern('oiliness',this)">Oiliness</div>
+                <div class="chip" onclick="toggleConcern('redness',this)">Redness</div>
+                <div class="chip" onclick="toggleConcern('dullness',this)">Dullness</div>
+                <div class="chip" onclick="toggleConcern('none',this)">All good</div>
+            </div>
+
+            <div class="note-wrap">
+                <div class="note-label">Anything else? (optional)</div>
+                <textarea class="note-input" id="diaryNote" rows="2"
+                    placeholder="e.g. tried a new product, didn't sleep well, drank lots of water..."></textarea>
+            </div>
+
+            <button class="btn-submit" id="submitBtn" onclick="submitLog()">
+                Save entry <i class="fas fa-arrow-right"></i>
+            </button>
+        </section>
+
+        <hr class="divider">
+
+        <!-- Progress chart -->
+        <div id="chartSection" style="display:none;">
+            <div class="section-title">Your Progress</div>
+            <div class="section-sub" id="entryCountLabel"></div>
+            <div class="chart-container">
+                <div class="no-data-msg" id="noDataMsg">Log at least 2 entries to see your chart.</div>
+                <canvas id="skinChart" style="display:none;"></canvas>
+            </div>
+        </div>
+
+        <hr class="divider" id="insightDivider" style="display:none;">
+
+        <!-- AI insight -->
+        <div id="insightSection" style="display:none;">
+            <div class="insight-eyebrow">GlowMate Insight</div>
+            <div id="insightText" class="insight-quote">
+                <div class="insight-loading"><div class="spinner"></div> Reading your entries...</div>
+            </div>
+        </div>
+
+        <!-- Routine button — bottom of page -->
+        <div class="routine-footer" id="routineFooter" style="display:none;">
+            <div class="routine-footer-label">Your Skincare Routine</div>
+            <h3>See your personalised AM & PM routine</h3>
+            <p>Your routine was built around your skin type and concerns, with real product recommendations at every budget.</p>
+            <button class="btn-see-routine" onclick="showRoutinePage()">
+                View my routine <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
+    </div><!-- end mainDiary -->
+
+    <!-- ═══════════════════════════════════
+         ROUTINE PAGE (separate view)
+    ═══════════════════════════════════ -->
+    <div id="routinePage" style="display:none;">
+        <button class="btn-back-diary" onclick="showDiaryPage()">
+            <i class="fas fa-arrow-left"></i> Back to diary
+        </button>
+        <div class="journal-date">Your Routine</div>
+        <h1 class="journal-title" style="margin-bottom:32px;">Personalised for<br>your skin.</h1>
+
+        <div class="routine-tabs">
+            <button class="rtab active" id="rtabAM" onclick="showRoutineTab('AM')">Morning</button>
+            <button class="rtab" id="rtabPM" onclick="showRoutineTab('PM')">Evening</button>
+        </div>
+
+        <div id="routineStepsList"></div>
+
+        <button class="btn-regen" onclick="confirmRegen()">
+            <i class="fas fa-redo"></i> Regenerate routine
+        </button>
+    </div>
+
+</div><!-- end .page -->
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════
+const GROQ_API_KEY = CONFIG.GROQ_API_KEY;
+const GROQ_MODEL   = 'llama-3.3-70b-versatile';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAfj-_lJznvocLDQyDiiZvtEUf9xa18B78",
+    authDomain: "glowmate-155a1.firebaseapp.com",
+    projectId: "glowmate-155a1",
+    storageBucket: "glowmate-155a1.firebasestorage.app",
+    messagingSenderId: "318839433654",
+    appId: "1:318839433654:web:c5ec16f4ab270e4a27f917"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let currentUser  = null;
+let userProfile  = null;
+let savedRoutine = null;
+let diaryEntries = [];
+let activeTab    = 'AM';
+let skinChart    = null;
+
+const answers = { skinFeel: null, routine: null, stress: null, concerns: [] };
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+function toArray(val) {
+    if (!val) return [];
+    if (Array.isArray(val)) return val.filter(Boolean);
+    if (typeof val === 'string') return val.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+    return [];
+}
+function show(id) { const e = document.getElementById(id); if (e) e.style.display = 'block'; }
+function hide(id) { const e = document.getElementById(id); if (e) e.style.display = 'none'; }
+
+function todayFormatted() {
+    return new Date().toLocaleDateString('en-GB', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+}
+function formatDate(ts) {
+    const d = ts?.toDate ? ts.toDate() : new Date(ts);
+    if (d.toDateString() === new Date().toDateString()) return 'Today';
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
+// ═══════════════════════════════════════════════════════
+// AUTH + LOAD
+// ═══════════════════════════════════════════════════════
+auth.onAuthStateChanged(async user => {
+    if (!user) { window.location.href = 'index.html'; return; }
+    currentUser = user;
+
+    try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+            userProfile = userDoc.data().skinProfile || {};
+            userProfile.concerns  = toArray(userProfile.concerns);
+            userProfile.allergies = toArray(userProfile.allergies);
+            if (userProfile.pregnancy === undefined)
+                userProfile.pregnancy = userProfile.pregnant || userProfile.breastfeeding || false;
+        }
+
+        const routineDoc = await db.collection('diaries').doc(user.uid).get();
+        if (routineDoc.exists && routineDoc.data().routine)
+            savedRoutine = routineDoc.data().routine;
+
+        const snap = await db.collection('diaries').doc(user.uid)
+            .collection('entries').orderBy('timestamp', 'desc').get();
+        diaryEntries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    } catch(e) { console.error('Load error:', e); }
+
+    hide('loadingScreen');
+    if (!savedRoutine) { show('welcomeScreen'); }
+    else { renderMainDiary(); }
+});
+
+// ═══════════════════════════════════════════════════════
+// GENERATE ROUTINE
+// ═══════════════════════════════════════════════════════
+async function generateRoutine() {
+    hide('welcomeScreen');
+    show('generatingScreen');
+
+    const skin     = userProfile?.skinType  || 'normal';
+    const concerns = (userProfile?.concerns || []).join(', ') || 'none';
+    const age      = userProfile?.ageRange  || 'adult';
+    const pregnant = userProfile?.pregnancy || false;
+
+    const prompt = `You are a professional skincare formulator. Create a personalised AM and PM routine.
+User: skin type ${skin}, age ${age}, concerns: ${concerns}, pregnant/breastfeeding: ${pregnant}.
+Return ONLY raw JSON, no markdown:
+{
+  "AM": [{ "step":1, "type":"Cleanser", "product":"...", "why":"one natural sentence", "brands":[{"name":"...","tier":"budget"},{"name":"...","tier":"midrange"}] }],
+  "PM": [...]
+}
+AM steps: cleanser, toner if needed, serum, moisturiser, SPF last.
+PM steps: cleanser, toner if needed, treatment (retinol/AHA only if appropriate — NOT for sensitive/pregnant), serum, moisturiser.
+Budget brands: CeraVe, The Ordinary, Neutrogena, Altruist, Simple.
+Midrange: La Roche-Posay, Paula's Choice, Kiehl's, Drunk Elephant, First Aid Beauty.`;
+
+    try {
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_API_KEY}` },
+            body: JSON.stringify({ model: GROQ_MODEL, messages: [{ role: 'user', content: prompt }], temperature: 0.4, max_tokens: 1800 })
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || 'HTTP ' + res.status);
+        }
+
+        const data = await res.json();
+        let text = (data.choices[0]?.message?.content || '').trim()
+            .replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+        const start = text.indexOf('{'), end = text.lastIndexOf('}');
+        if (start === -1) throw new Error('AI did not return valid JSON. Try again.');
+        const parsed = JSON.parse(text.slice(start, end + 1));
+        if (!parsed.AM || !parsed.PM) throw new Error('Routine incomplete. Try again.');
+
+        savedRoutine = parsed;
+        await db.collection('diaries').doc(currentUser.uid).set(
+            { routine: savedRoutine, createdAt: firebase.firestore.FieldValue.serverTimestamp() },
+            { merge: true }
+        );
+
+        hide('generatingScreen');
+        renderMainDiary();
+
+    } catch(e) {
+        console.error('Generation failed:', e.message);
+        hide('generatingScreen');
+        show('welcomeScreen');
+        let msg = '⚠️ ' + e.message;
+        if (e.message.includes('401') || e.message.toLowerCase().includes('api key'))
+            msg = '❌ Invalid API key — update GROQ_API_KEY in the code.';
+        else if (e.message.includes('429'))
+            msg = '⏳ Rate limit hit. Wait 30 seconds and try again.';
+        alert(msg);
+    }
+}
+
+async function confirmRegen() {
+    if (!confirm('This will replace your current routine. Sure?')) return;
+    savedRoutine = null;
+    hide('routinePage');
+    hide('mainDiary');
+    show('welcomeScreen');
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER MAIN DIARY
+// ═══════════════════════════════════════════════════════
+function renderMainDiary() {
+    show('mainDiary');
+    document.getElementById('todayDate').textContent = todayFormatted();
+    document.getElementById('diarySubtitle').textContent =
+        userProfile?.skinType
+            ? `Tracking your ${userProfile.skinType} skin journey.`
+            : 'Track your skin journey.';
+
+    renderStreak();
+    show('logFormSection');
+    show('chartSection');
+    show('routineFooter');
+
+    document.getElementById('entryCountLabel').textContent =
+        diaryEntries.length > 0
+            ? `${diaryEntries.length} entr${diaryEntries.length === 1 ? 'y' : 'ies'} logged`
+            : 'No entries yet — log your first one above.';
+
+    renderChart();
+
+    if (diaryEntries.length >= 5) {
+        show('insightDivider');
+        show('insightSection');
+        loadInsight();
+    }
+}
+
+// ═══════════════════════════════════════════════════════
+// STREAK — shows consecutive logging days
+// ═══════════════════════════════════════════════════════
+function renderStreak() {
+    if (diaryEntries.length === 0) return;
+    show('streakSection');
+
+    const loggedDates = new Set(
+        diaryEntries.map(e => {
+            const d = e.timestamp?.toDate ? e.timestamp.toDate() : new Date();
+            return d.toISOString().slice(0, 10);
+        })
+    );
+
+    // Count streak backwards from today
+    let streak = 0;
+    const today = new Date();
+    for (let i = 0; i < 90; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        if (loggedDates.has(d.toISOString().slice(0, 10))) streak++;
+        else if (i > 0) break;
+    }
+
+    document.getElementById('streakCount').textContent = streak;
+    if      (streak === 0) { document.getElementById('streakTitle').textContent = 'Start your streak'; document.getElementById('streakDesc').textContent = 'Log today to begin.'; }
+    else if (streak === 1) { document.getElementById('streakTitle').textContent = 'Day streak — you started!'; document.getElementById('streakDesc').textContent = 'Come back tomorrow to keep it going.'; }
+    else if (streak < 7)   { document.getElementById('streakTitle').textContent = 'Day streak — keep going!'; document.getElementById('streakDesc').textContent = `${7 - streak} more days to hit a full week.`; }
+    else                   { document.getElementById('streakTitle').textContent = "Day streak — you're on a roll!"; document.getElementById('streakDesc').textContent = 'Consistency is the real secret to better skin.'; }
+
+    // Last 7 days dots
+    const dotsEl = document.getElementById('streakDots');
+    dotsEl.innerHTML = '';
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const dot = document.createElement('div');
+        dot.className = 'streak-dot';
+        if (i === 0) dot.classList.add('today');
+        else if (loggedDates.has(d.toISOString().slice(0, 10))) dot.classList.add('logged');
+        dotsEl.appendChild(dot);
+    }
+    const lbl = document.createElement('span');
+    lbl.className = 'streak-dots-label';
+    lbl.textContent = 'last 7 days';
+    dotsEl.appendChild(lbl);
+}
+
+// ═══════════════════════════════════════════════════════
+// LOG FORM INTERACTIONS
+// ═══════════════════════════════════════════════════════
+function selectFeel(value, el) {
+    document.querySelectorAll('#q1 .feel-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    answers.skinFeel = value;
+}
+function selectChip(qid, value, el) {
+    document.querySelectorAll(`#${qid} .chip`).forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    if (qid === 'q2') answers.routine = value;
+    if (qid === 'q3') answers.stress  = value;
+}
+function toggleConcern(value, el) {
+    if (value === 'none') {
+        answers.concerns = ['none'];
+        document.querySelectorAll('#q4 .chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        return;
+    }
+    document.querySelectorAll('#q4 .chip').forEach(c => { if (c.textContent.trim() === 'All good') c.classList.remove('selected'); });
+    answers.concerns = answers.concerns.filter(c => c !== 'none');
+    if (answers.concerns.includes(value)) { answers.concerns = answers.concerns.filter(c => c !== value); el.classList.remove('selected'); }
+    else { answers.concerns.push(value); el.classList.add('selected'); }
+}
+
+// ═══════════════════════════════════════════════════════
+// SUBMIT ENTRY
+// ═══════════════════════════════════════════════════════
+async function submitLog() {
+    if (!answers.skinFeel) { alert('Please tell us how your skin feels today.'); return; }
+    const btn = document.getElementById('submitBtn');
+    btn.disabled  = true;
+    btn.innerHTML = 'Saving... <i class="fas fa-spinner fa-spin"></i>';
+
+    try {
+        const entry = {
+            skinFeel:  answers.skinFeel,
+            routine:   answers.routine  || null,
+            stress:    answers.stress   || null,
+            concerns:  answers.concerns,
+            note:      document.getElementById('diaryNote').value.trim(),
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        const ref = await db.collection('diaries').doc(currentUser.uid).collection('entries').add(entry);
+        diaryEntries.unshift({ id: ref.id, ...entry, timestamp: { toDate: () => new Date() } });
+
+        showPostLog(answers.skinFeel);
+        renderStreak();
+        renderChart();
+        document.getElementById('entryCountLabel').textContent =
+            `${diaryEntries.length} entr${diaryEntries.length === 1 ? 'y' : 'ies'} logged`;
+
+        if (diaryEntries.length >= 5) { show('insightDivider'); show('insightSection'); loadInsight(); }
+
+        answers.skinFeel = null; answers.routine = null; answers.stress = null; answers.concerns = [];
+
+    } catch(e) {
+        console.error('Save failed:', e);
+        alert('Could not save. Please try again.');
+        btn.disabled  = false;
+        btn.innerHTML = 'Save entry <i class="fas fa-arrow-right"></i>';
+    }
+}
+
+// ═══════════════════════════════════════════════════════
+// POST LOG MESSAGES
+// ═══════════════════════════════════════════════════════
+const POST_LOG = {
+    1: { eyebrow:'Hard days are real',    message:'"Even the worst skin days pass."',             fact:'Your skin renews itself every 4–6 weeks. What you do today is already working, even when it doesn\'t feel like it.' },
+    2: { eyebrow:'Not great, but honest', message:'"Showing up is half the work."',               fact:'Cortisol directly increases sebum production. If stress is affecting your skin, you\'re not imagining it.' },
+    3: { eyebrow:'Okay is enough',        message:'"Consistency beats perfection every time."',   fact:'It takes at least 8 weeks of consistent product use to see meaningful results. You\'re building something real.' },
+    4: { eyebrow:'Good day',              message:'"Your routine is doing something right."',     fact:'Good skin days are made, not born. Whatever you did today — sleep, water, your routine — it mattered.' },
+    5: { eyebrow:'Glowing!',              message:'"This is what consistency looks like."',       fact:'Your skin is your body\'s largest organ. On a day like today, all of it is thriving.' },
+};
+
+function showPostLog(feel) {
+    const p = POST_LOG[feel] || POST_LOG[3];
+    document.getElementById('postEyebrow').textContent = p.eyebrow;
+    document.getElementById('postMessage').textContent = p.message;
+    document.getElementById('postFact').textContent    = p.fact;
+    hide('logFormSection');
+    show('postLogSection');
+}
+
+function showLogForm() {
+    hide('postLogSection');
+    show('logFormSection');
+    const btn = document.getElementById('submitBtn');
+    btn.disabled  = false;
+    btn.innerHTML = 'Save entry <i class="fas fa-arrow-right"></i>';
+    document.querySelectorAll('.feel-btn, .chip').forEach(el => el.classList.remove('selected'));
+    document.getElementById('diaryNote').value = '';
+}
+
+// ═══════════════════════════════════════════════════════
+// CHART
+// ═══════════════════════════════════════════════════════
+function renderChart() {
+    if (diaryEntries.length < 2) {
+        document.getElementById('noDataMsg').style.display  = 'block';
+        document.getElementById('skinChart').style.display  = 'none';
+        return;
+    }
+    document.getElementById('noDataMsg').style.display  = 'none';
+    document.getElementById('skinChart').style.display  = 'block';
+
+    const entries = [...diaryEntries].reverse();
+    const labels  = entries.map(e => formatDate(e.timestamp));
+    const scores  = entries.map(e => e.skinFeel);
+
+    if (skinChart) { skinChart.destroy(); skinChart = null; }
+
+    const ctx = document.getElementById('skinChart').getContext('2d');
+    skinChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Skin feel',
+                data: scores,
+                fill: true,
+                backgroundColor: (() => {
+                    const g = ctx.createLinearGradient(0, 0, 0, 300);
+                    g.addColorStop(0, 'rgba(248,177,149,0.22)');
+                    g.addColorStop(1, 'rgba(248,177,149,0)');
+                    return g;
+                })(),
+                borderColor: '#F67280',
+                pointBackgroundColor: '#F67280',
+                pointBorderColor: 'white',
+                pointBorderWidth: 3,
+                pointRadius: 7,
+                pointHoverRadius: 9,
+                tension: 0.45,
+                borderWidth: 2.5,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#fff',
+                    titleColor: '#333',
+                    bodyColor: '#888',
+                    borderColor: '#f0ebe8',
+                    borderWidth: 1,
+                    padding: 12,
+                    callbacks: {
+                        label: ctx => ({ 1:'Terrible', 2:'Not great', 3:'Okay', 4:'Good', 5:'Glowing' }[ctx.raw] || ctx.raw)
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    min: 1, max: 5,
+                    ticks: {
+                        stepSize: 1,
+                        font: { family: 'DM Sans', size: 12 }, color: '#bbb',
+                        callback: v => ({ 1:'Terrible', 2:'Not great', 3:'Okay', 4:'Good', 5:'Glowing' }[v] || v)
+                    },
+                    grid: { color: '#f5f0ed' }
+                },
+                x: {
+                    ticks: { font: { family: 'DM Sans', size: 12 }, color: '#bbb' },
+                    grid:  { display: false }
+                }
+            }
+        }
+    });
+}
+
+// ═══════════════════════════════════════════════════════
+// AI INSIGHT
+// ═══════════════════════════════════════════════════════
+async function loadInsight() {
+    const el = document.getElementById('insightText');
+    el.innerHTML = '<div class="insight-loading"><div class="spinner"></div> Reading your entries...</div>';
+
+    const last7   = [...diaryEntries].slice(0, 7).reverse();
+    const feelMap = { 1:'terrible', 2:'not great', 3:'okay', 4:'good', 5:'glowing' };
+    const summary = last7.map((e, i) =>
+        `Entry ${i+1} (${formatDate(e.timestamp)}): skin felt ${feelMap[e.skinFeel]}, ` +
+        `routine: ${e.routine || 'not logged'}, stress: ${['calm','fine','a bit stressed','very stressed'][e.stress-1] || 'not logged'}, ` +
+        `concerns: ${e.concerns?.join(', ') || 'none'}.`
+    ).join('\n');
+
+    const prompt = `You are a warm skincare coach. Based on these diary entries, write ONE short paragraph (3–4 sentences) of personalised insight.
+Skin type: ${userProfile?.skinType || 'normal'}. Concerns: ${(userProfile?.concerns || []).join(', ') || 'none'}.
+Entries:\n${summary}
+Find a real pattern. Give one practical tip. End with an encouraging line.
+No lists, no headers. Just a warm, insightful paragraph. Do not start with "I noticed" or "Based on".`;
+
+    try {
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_API_KEY}` },
+            body: JSON.stringify({ model: GROQ_MODEL, messages: [{ role: 'user', content: prompt }], temperature: 0.5, max_tokens: 260 })
+        });
+        const data = await res.json();
+        el.textContent = data.choices[0].message.content.trim();
+    } catch(e) {
+        el.textContent = 'Could not load insight right now — check back after your next entry.';
+    }
+}
+
+// ═══════════════════════════════════════════════════════
+// ROUTINE PAGE
+// ═══════════════════════════════════════════════════════
+function showRoutinePage() { hide('mainDiary'); show('routinePage'); renderRoutineSteps(); }
+function showDiaryPage()    { hide('routinePage'); show('mainDiary'); }
+function showRoutineTab(tab) {
+    activeTab = tab;
+    document.getElementById('rtabAM').classList.toggle('active', tab === 'AM');
+    document.getElementById('rtabPM').classList.toggle('active', tab === 'PM');
+    renderRoutineSteps();
+}
+function renderRoutineSteps() {
+    const steps = savedRoutine?.[activeTab] || [];
+    const el    = document.getElementById('routineStepsList');
+    if (!steps.length) { el.innerHTML = '<p style="color:#888;font-size:14px;">No steps found.</p>'; return; }
+    el.innerHTML = steps.map(s => `
+        <div class="routine-step">
+            <div class="step-num">${s.step}</div>
+            <div class="step-body">
+                <div class="step-type">${s.type}</div>
+                <div class="step-product">${s.product}</div>
+                <div class="step-why">${s.why}</div>
+                <div class="step-brands">
+                    ${(s.brands || []).map(b => `<span class="brand-tag ${b.tier}">${b.tier === 'budget' ? '$' : '$$'} ${b.name}</span>`).join('')}
+                </div>
+            </div>
+        </div>`).join('');
+}
+</script>
+</body>
+</html>

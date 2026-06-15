@@ -1,0 +1,4 @@
+const CONFIG = {
+    GROQ_API_KEY: "your_groq_api_key_here",
+    WEATHER_API_KEY: "your_weather_api_key_here"
+};

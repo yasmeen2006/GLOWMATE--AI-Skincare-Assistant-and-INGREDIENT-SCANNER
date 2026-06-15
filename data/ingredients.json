@@ -1,0 +1,834 @@
+{
+  "purified water": {
+    "name": "Water (Aqua)",
+    "category": "Solvent",
+    "benefits": ["Universal base", "Hydrating", "Safe for all skin types"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 1,
+    "explanation": "Universal solvent and base ingredient. Essential and safe for everyone."
+  },
+
+  "water": {
+    "name": "Water (Aqua)",
+    "category": "Solvent",
+    "benefits": ["Universal base", "Hydrating", "Safe for all skin types"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 1,
+    "explanation": "Universal solvent and base ingredient. Essential and safe for everyone."
+  },
+  
+  "glycerin": {
+    "name": "Glycerin",
+    "category": "Hydration",
+    "benefits": ["Deep hydration", "Moisture retention", "Improves skin barrier"],
+    "goodFor": ["dry", "normal", "combination", "sensitive"],
+    "avoid": [],
+    "caution": ["oily"],
+    "score": 7,
+    "explanation": "Powerful humectant that draws moisture into skin. Excellent for dry skin."
+  },
+  
+  "hyaluronic-acid": {
+    "name": "Hyaluronic Acid",
+    "category": "Hydration",
+    "benefits": ["Intense hydration", "Plumps skin", "Reduces fine lines"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 10,
+    "explanation": "Holds 1000x its weight in water. Suitable for all skin types, non-comedogenic."
+  },
+  
+  "sodium-hyaluronate": {
+    "name": "Sodium Hyaluronate",
+    "category": "Hydration",
+    "benefits": ["Deep hydration", "Smaller molecule than HA", "Penetrates better"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 10,
+    "explanation": "Salt form of hyaluronic acid. Penetrates deeper into skin layers."
+  },
+  
+  "niacinamide": {
+    "name": "Niacinamide",
+    "category": "Active",
+    "benefits": ["Reduces oil", "Minimizes pores", "Brightens", "Strengthens barrier"],
+    "goodFor": ["oily", "combination", "acne", "normal"],
+    "avoid": [],
+    "caution": ["sensitive"],
+    "score": 10,
+    "pregnancy": "safe",
+    "explanation": "Vitamin B3. Regulates sebum, reduces inflammation, and improves skin tone."
+  },
+  
+  "salicylic-acid": {
+    "name": "Salicylic Acid",
+    "category": "Active",
+    "benefits": ["Unclogs pores", "Treats acne", "Exfoliates"],
+    "goodFor": ["oily", "acne", "combination"],
+    "avoid": ["dry", "sensitive"],
+    "caution": [],
+    "score": 10,
+    "pregnancy": "avoid-high-dose",
+    "explanation": "BHA that penetrates pores. Excellent for acne but can be drying."
+  },
+  
+  "retinol": {
+    "name": "Retinol",
+    "category": "Active",
+    "benefits": ["Anti-aging", "Reduces wrinkles", "Improves texture", "Treats acne"],
+    "goodFor": ["normal", "oily", "mature"],
+    "avoid": ["sensitive", "dry"],
+    "caution": [],
+    "score": 10,
+    "pregnancy": "unsafe",
+    "explanation": "Vitamin A derivative. Powerful anti-aging but irritating. Start slowly."
+  },
+  
+  "retinal": {
+    "name": "Retinal (Retinaldehyde)",
+    "category": "Active",
+    "benefits": ["Faster than retinol", "Anti-aging", "Less irritating than tretinoin"],
+    "goodFor": ["normal", "oily", "mature"],
+    "avoid": ["sensitive", "dry"],
+    "caution": [],
+    "score": 10,
+    "pregnancy": "unsafe",
+    "explanation": "One step away from retinoic acid. More potent than retinol."
+  },
+  
+  "retinyl-palmitate": {
+    "name": "Retinyl Palmitate",
+    "category": "Active",
+    "benefits": ["Mild anti-aging", "Gentler than retinol"],
+    "goodFor": ["normal", "sensitive"],
+    "avoid": [],
+    "caution": ["dry"],
+    "score": 5,
+    "pregnancy": "unsafe",
+    "explanation": "Weakest retinoid form. Good for beginners but less effective."
+  },
+  
+  "vitamin-c": {
+    "name": "Vitamin C (Ascorbic Acid)",
+    "category": "Active",
+    "benefits": ["Brightens", "Antioxidant", "Boosts collagen", "Fades dark spots"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": ["sensitive"],
+    "score": 10,
+    "pregnancy": "safe",
+    "explanation": "Powerful antioxidant. Use in AM with sunscreen for best results."
+  },
+  
+  "alpha arbutin": {
+    "name": "Alpha Arbutin",
+    "category": "Brightening",
+    "benefits": ["Fades dark spots", "Brightens", "Gentle"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 8,
+    "pregnancy": "safe",
+    "explanation": "Gold standard for pigmentation. Safer than hydroquinone."
+  },
+  
+  "azelaic-acid": {
+    "name": "Azelaic Acid",
+    "category": "Active",
+    "benefits": ["Treats acne", "Fades pigmentation", "Anti-inflammatory"],
+    "goodFor": ["acne", "sensitive", "rosacea", "pigmentation"],
+    "avoid": [],
+    "caution": [],
+    "score": 10,
+    "pregnancy": "safe",
+    "explanation": "Gentle multi-tasker. Safe for sensitive skin and pregnancy."
+  },
+  
+  "ceramide-np": {
+    "name": "Ceramide NP",
+    "category": "Barrier Repair",
+    "benefits": ["Repairs barrier", "Reduces moisture loss", "Strengthens skin"],
+    "goodFor": ["dry", "sensitive", "eczema", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 10,
+    "pregnancy": "safe",
+    "explanation": "Essential lipid in skin barrier. Excellent for compromised skin."
+  },
+  
+  "ceramide-ap": {
+    "name": "Ceramide AP",
+    "category": "Barrier Repair",
+    "benefits": ["Barrier repair", "Exfoliation", "Anti-aging"],
+    "goodFor": ["dry", "sensitive", "mature", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 10,
+    "pregnancy": "safe",
+    "explanation": "Unique ceramide with mild exfoliating properties."
+  },
+  
+  "ceramide-eop": {
+    "name": "Ceramide EOP",
+    "category": "Barrier Repair",
+    "benefits": ["Structural support", "Barrier function", "Moisture retention"],
+    "goodFor": ["dry", "sensitive", "eczema", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 10,
+    "pregnancy": "safe",
+    "explanation": "Long-chain ceramide crucial for skin structure."
+  },
+  
+  "squalane": {
+    "name": "Squalane",
+    "category": "Emollient",
+    "benefits": ["Lightweight hydration", "Non-comedogenic", "Mimics skin oils"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 8,
+    "pregnancy": "safe",
+    "explanation": "Stable form of squalene. Perfect for all skin types, including oily."
+  },
+  
+  "panthenol": {
+    "name": "Panthenol (Pro-Vitamin B5)",
+    "category": "Soothing",
+    "benefits": ["Soothes", "Hydrates", "Reduces redness"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 7,
+    "pregnancy": "safe",
+    "explanation": "Converts to vitamin B5. Excellent for irritated or sensitive skin."
+  },
+  
+  "centella-asiatica": {
+    "name": "Centella Asiatica Extract",
+    "category": "Soothing",
+    "benefits": ["Calms irritation", "Wound healing", "Anti-inflammatory"],
+    "goodFor": ["sensitive", "acne", "rosacea", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 10,
+    "pregnancy": "safe",
+    "explanation": "Cica/Tiger grass. Gold standard for sensitive and damaged skin."
+  },
+  
+  "zinc-oxide": {
+    "name": "Zinc Oxide",
+    "category": "Sunscreen",
+    "benefits": ["Broad spectrum UVA/UVB protection", "Non-irritating", "Soothes"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 10,
+    "pregnancy": "safe",
+    "explanation": "Physical sunscreen filter. Safe for sensitive skin and babies."
+  },
+  
+  "titanium-dioxide": {
+    "name": "Titanium Dioxide",
+    "category": "Sunscreen",
+    "benefits": ["Physical sun protection", "Gentle", "Non-irritating"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 10,
+    "pregnancy": "safe",
+    "explanation": "Mineral sunscreen. Safe but can leave white cast."
+  },
+  
+  "fragrance": {
+    "name": "Fragrance (Parfum)",
+    "category": "Fragrance",
+    "benefits": ["Pleasant scent"],
+    "goodFor": ["normal"],
+    "avoid": ["sensitive", "eczema", "rosacea"],
+    "caution": ["all"],
+    "score": -15,
+    "allergen": true,
+    "pregnancy": "safe",
+    "explanation": "Common allergen. Can cause irritation, especially in sensitive skin."
+  },
+  
+  "alcohol-denat": {
+    "name": "Alcohol Denat",
+    "category": "Solvent",
+    "benefits": ["Fast absorption", "Mattifying"],
+    "goodFor": ["oily"],
+    "avoid": ["dry", "sensitive", "eczema"],
+    "caution": [],
+    "score": -10,
+    "pregnancy": "safe",
+    "explanation": "Drying alcohol. Avoid if you have dry or sensitive skin."
+  },
+  
+  "glycolic-acid": {
+    "name": "Glycolic Acid",
+    "category": "Exfoliant",
+    "benefits": ["Exfoliates", "Brightens", "Anti-aging"],
+    "goodFor": ["oily", "normal", "pigmentation", "mature"],
+    "avoid": ["sensitive", "dry"],
+    "caution": [],
+    "score": 8,
+    "pregnancy": "safe",
+    "explanation": "AHA with smallest molecule. Effective but can irritate. Start slowly."
+  },
+  
+  "lactic-acid": {
+    "name": "Lactic Acid",
+    "category": "Exfoliant",
+    "benefits": ["Gentle exfoliation", "Hydrating", "Brightening"],
+    "goodFor": ["dry", "sensitive", "normal"],
+    "avoid": [],
+    "caution": [],
+    "score": 8,
+    "pregnancy": "safe",
+    "explanation": "Gentler AHA than glycolic. Good for beginners."
+  },
+  
+  "benzoyl-peroxide": {
+    "name": "Benzoyl Peroxide",
+    "category": "Active",
+    "benefits": ["Kills acne bacteria", "Fast results"],
+    "goodFor": ["acne", "oily"],
+    "avoid": ["dry", "sensitive", "eczema"],
+    "caution": [],
+    "score": 8,
+    "pregnancy": "safe",
+    "explanation": "Powerful acne treatment. Can bleach fabrics and be very drying."
+  },
+  
+  "sodium-lauryl-sulfate": {
+    "name": "Sodium Lauryl Sulfate (SLS)",
+    "category": "Cleanser",
+    "benefits": ["Strong cleansing", "Foaming"],
+    "goodFor": ["oily"],
+    "avoid": ["dry", "sensitive", "eczema"],
+    "caution": [],
+    "score": -8,
+    "pregnancy": "safe",
+    "explanation": "Harsh surfactant. Strips natural oils. Avoid if you have dry skin."
+  },
+  
+  "cocamidopropyl-betaine": {
+    "name": "Cocamidopropyl Betaine",
+    "category": "Cleanser",
+    "benefits": ["Gentle cleansing", "Good foaming", "Mild"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 5,
+    "pregnancy": "safe",
+    "explanation": "Mild surfactant derived from coconut. Gentler than sulfates."
+  },
+  
+  "dimethicone": {
+    "name": "Dimethicone",
+    "category": "Emollient",
+    "benefits": ["Smooths texture", "Locks in moisture", "Creates barrier"],
+    "goodFor": ["dry", "normal"],
+    "avoid": [],
+    "caution": ["acne", "oily"],
+    "score": 3,
+    "pregnancy": "safe",
+    "explanation": "Silicone that creates occlusive layer. May clog pores in acne-prone skin."
+  },
+  
+  "phenoxyethanol": {
+    "name": "Phenoxyethanol",
+    "category": "Preservative",
+    "benefits": ["Prevents bacterial growth", "Extends shelf life"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": ["sensitive"],
+    "score": 1,
+    "pregnancy": "safe",
+    "explanation": "Common preservative. Generally safe but can irritate sensitive skin."
+  },
+  
+  "parabens": {
+    "name": "Parabens (Methylparaben, Propylparaben)",
+    "category": "Preservative",
+    "benefits": ["Effective preservation", "Prevents contamination"],
+    "goodFor": ["normal"],
+    "avoid": [],
+    "caution": ["sensitive"],
+    "score": -5,
+    "pregnancy": "caution",
+    "explanation": "Controversial preservative. Generally safe but some prefer to avoid."
+  },
+  
+  "tea-tree-oil": {
+    "name": "Tea Tree Leaf Oil",
+    "category": "Active",
+    "benefits": ["Antibacterial", "Treats acne", "Reduces inflammation"],
+    "goodFor": ["oily", "acne"],
+    "avoid": ["dry", "sensitive"],
+    "caution": [],
+    "score": 7,
+    "pregnancy": "safe",
+    "explanation": "Natural antibacterial. Effective for acne but can be irritating."
+  },
+  
+  "kojic-acid": {
+    "name": "Kojic Acid",
+    "category": "Brightening",
+    "benefits": ["Fades dark spots", "Brightens", "Inhibits melanin"],
+    "goodFor": ["pigmentation", "normal", "oily"],
+    "avoid": [],
+    "caution": ["sensitive"],
+    "score": 7,
+    "pregnancy": "caution",
+    "explanation": "Derived from fungi. Effective for pigmentation but can irritate."
+  },
+  
+  "tranexamic-acid": {
+    "name": "Tranexamic Acid",
+    "category": "Brightening",
+    "benefits": ["Fades melasma", "Reduces dark spots", "Anti-inflammatory"],
+    "goodFor": ["pigmentation", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 8,
+    "pregnancy": "avoid",
+    "explanation": "Emerging ingredient for stubborn pigmentation. Very effective."
+  },
+  
+  "peptides": {
+    "name": "Peptides",
+    "category": "Anti-Aging",
+    "benefits": ["Boosts collagen", "Firms skin", "Reduces wrinkles"],
+    "goodFor": ["mature", "normal", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 7,
+    "pregnancy": "safe",
+    "explanation": "Amino acid chains that signal collagen production."
+  },
+  
+  "adenosine": {
+    "name": "Adenosine",
+    "category": "Anti-Aging",
+    "benefits": ["Smooths wrinkles", "Energizes cells", "Anti-inflammatory"],
+    "goodFor": ["mature", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 7,
+    "pregnancy": "safe",
+    "explanation": "Naturally occurring in skin. Proven anti-aging benefits."
+  },
+  
+  "bakuchiol": {
+    "name": "Bakuchiol",
+    "category": "Active",
+    "benefits": ["Retinol alternative", "Anti-aging", "Gentle"],
+    "goodFor": ["sensitive", "pregnant", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 8,
+    "pregnancy": "safe",
+    "explanation": "Natural retinol alternative. Pregnancy-safe with similar benefits."
+  },
+  
+  "coenzyme-q10": {
+    "name": "Coenzyme Q10 (Ubiquinone)",
+    "category": "Antioxidant",
+    "benefits": ["Antioxidant", "Energizes cells", "Anti-aging"],
+    "goodFor": ["mature", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 6,
+    "pregnancy": "safe",
+    "explanation": "Natural antioxidant that declines with age."
+  },
+  
+  "green-tea-extract": {
+    "name": "Green Tea Extract",
+    "category": "Antioxidant",
+    "benefits": ["Antioxidant", "Anti-inflammatory", "Soothes redness"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 6,
+    "pregnancy": "safe",
+    "explanation": "Rich in polyphenols. Calming and protective."
+  },
+  
+  "limonene": {
+    "name": "Limonene",
+    "category": "Fragrance",
+    "benefits": ["Citrus scent"],
+    "goodFor": ["normal"],
+    "avoid": ["sensitive"],
+    "caution": ["all"],
+    "score": -10,
+    "allergen": true,
+    "pregnancy": "safe",
+    "explanation": "Citrus fragrance component. Can cause sensitization."
+  },
+  
+  "linalool": {
+    "name": "Linalool",
+    "category": "Fragrance",
+    "benefits": ["Floral scent"],
+    "goodFor": ["normal"],
+    "avoid": ["sensitive"],
+    "caution": ["all"],
+    "score": -10,
+    "allergen": true,
+    "pregnancy": "safe",
+    "explanation": "Common fragrance allergen. Can oxidize and irritate."
+  },
+  
+  "coconut-oil": {
+    "name": "Coconut Oil (Cocos Nucifera Oil)",
+    "category": "Emollient",
+    "benefits": ["Moisturizing", "Antibacterial"],
+    "goodFor": ["dry", "body"],
+    "avoid": ["acne", "oily", "face"],
+    "caution": [],
+    "score": -8,
+    "pregnancy": "safe",
+    "explanation": "Highly comedogenic (pore-clogging). Avoid on face if acne-prone."
+  },
+  
+  "shea-butter": {
+    "name": "Shea Butter",
+    "category": "Emollient",
+    "benefits": ["Rich moisturizer", "Barrier repair", "Soothing"],
+    "goodFor": ["dry", "eczema", "sensitive"],
+    "avoid": ["oily"],
+    "caution": ["acne"],
+    "score": 8,
+    "pregnancy": "safe",
+    "explanation": "Thick emollient. Excellent for dry skin but too heavy for oily."
+  },
+  
+  "jojoba-oil": {
+    "name": "Jojoba Oil",
+    "category": "Emollient",
+    "benefits": ["Mimics sebum", "Non-comedogenic", "Balances oil"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 7,
+    "pregnancy": "safe",
+    "explanation": "Technically a wax ester. Similar to skin's natural oils."
+  },
+  
+  "argan-oil": {
+    "name": "Argan Oil",
+    "category": "Emollient",
+    "benefits": ["Hydrating", "Rich in vitamin E", "Anti-aging"],
+    "goodFor": ["dry", "normal", "mature"],
+    "avoid": [],
+    "caution": ["oily", "acne"],
+    "score": 6,
+    "pregnancy": "safe",
+    "explanation": "Lightweight oil rich in antioxidants. May be too rich for oily skin."
+  },
+  
+  "rosehip-oil": {
+    "name": "Rosehip Seed Oil",
+    "category": "Emollient",
+    "benefits": ["Brightening", "Anti-aging", "Fades scars"],
+    "goodFor": ["dry", "pigmentation", "mature"],
+    "avoid": [],
+    "caution": ["oily", "acne"],
+    "score": 7,
+    "pregnancy": "safe",
+    "explanation": "Rich in vitamins A and C. Good for pigmentation but may be heavy."
+  },
+  
+  "avobenzone": {
+    "name": "Avobenzone",
+    "category": "Sunscreen",
+    "benefits": ["UVA protection", "Broad spectrum"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": ["sensitive"],
+    "score": 7,
+    "pregnancy": "safe",
+    "explanation": "Chemical UVA filter. Can be unstable without stabilizers."
+  },
+  
+  "octinoxate": {
+    "name": "Octinoxate (Ethylhexyl Methoxycinnamate)",
+    "category": "Sunscreen",
+    "benefits": ["UVB protection"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": ["sensitive"],
+    "score": 5,
+    "pregnancy": "caution",
+    "explanation": "Common chemical filter. Concerns about hormone disruption."
+  },
+  
+  "oxybenzone": {
+    "name": "Oxybenzone",
+    "category": "Sunscreen",
+    "benefits": ["Broad spectrum protection"],
+    "goodFor": ["normal"],
+    "avoid": ["sensitive", "eczema"],
+    "caution": [],
+    "score": -5,
+    "pregnancy": "avoid",
+    "explanation": "Controversial filter. High absorption rate. Many prefer to avoid."
+  },
+  
+  "aloe-vera": {
+    "name": "Aloe Barbadensis Leaf Juice",
+    "category": "Soothing",
+    "benefits": ["Soothes", "Hydrates", "Reduces redness"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 6,
+    "pregnancy": "safe",
+    "explanation": "Cooling and calming. Excellent for sunburn and irritation."
+  },
+  
+  "chamomile": {
+    "name": "Chamomile Extract",
+    "category": "Soothing",
+    "benefits": ["Anti-inflammatory", "Calming", "Reduces redness"],
+    "goodFor": ["sensitive", "rosacea", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 6,
+    "pregnancy": "safe",
+    "explanation": "Gentle botanical. Good for reactive skin."
+  },
+  
+  "calendula": {
+    "name": "Calendula Extract",
+    "category": "Soothing",
+    "benefits": ["Wound healing", "Anti-inflammatory", "Soothing"],
+    "goodFor": ["sensitive", "eczema", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 6,
+    "pregnancy": "safe",
+    "explanation": "Marigold extract. Traditional healing ingredient."
+  },
+  
+  "oat-extract": {
+    "name": "Oat Kernel Extract (Colloidal Oatmeal)",
+    "category": "Soothing",
+    "benefits": ["Soothes itching", "Anti-inflammatory", "Moisturizing"],
+    "goodFor": ["sensitive", "eczema", "dry", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 8,
+    "pregnancy": "safe",
+    "explanation": "Excellent for compromised skin barrier. Dermatologist-recommended."
+  },
+  
+  "urea": {
+    "name": "Urea",
+    "category": "Hydration",
+    "benefits": ["Exfoliates", "Hydrates", "Softens skin"],
+    "goodFor": ["dry", "eczema", "keratosis-pilaris"],
+    "avoid": [],
+    "caution": ["sensitive"],
+    "score": 7,
+    "pregnancy": "safe",
+    "explanation": "Humectant and keratolytic. Excellent for very dry, rough skin."
+  },
+  
+  "allantoin": {
+    "name": "Allantoin",
+    "category": "Soothing",
+    "benefits": ["Soothes", "Protects", "Promotes healing"],
+    "goodFor": ["all"],
+    "avoid": [],
+    "caution": [],
+    "score": 5,
+    "pregnancy": "safe",
+    "explanation": "Gentle ingredient. Often paired with irritating actives to soothe."
+  },
+  
+  "bisabolol": {
+    "name": "Bisabolol",
+    "category": "Soothing",
+    "benefits": ["Anti-inflammatory", "Calming", "Antioxidant"],
+    "goodFor": ["sensitive", "rosacea", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 6,
+    "pregnancy": "safe",
+    "explanation": "Derived from chamomile. Very gentle and soothing."
+  },
+  
+  "madecassoside": {
+    "name": "Madecassoside",
+    "category": "Soothing",
+    "benefits": ["Wound healing", "Anti-inflammatory", "Antioxidant"],
+    "goodFor": ["sensitive", "acne", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 8,
+    "pregnancy": "safe",
+    "explanation": "Active component of Centella. Very effective for irritation."
+  },
+  
+  "glutathione": {
+    "name": "Glutathione",
+    "category": "Brightening",
+    "benefits": ["Powerful antioxidant", "Brightening", "Anti-aging"],
+    "goodFor": ["pigmentation", "all"],
+    "avoid": [],
+    "caution": [],
+    "score": 7,
+    "pregnancy": "caution",
+    "explanation": "help improve the look of discolorations and promote an even skin tone and help restore skin's barrier."
+  },
+
+  
+
+  "propanediol": {
+    "name": "Propanediol",
+    "benefits": ["Hydration", "Improves absorption"],
+    "goodFor": ["all", "dry", "sensitive"],
+    "avoid": ["none"],
+    "caution": ["rare irritation"],
+    "explanation": "Humectant derived from corn that enhances ingredient penetration"
+  },
+
+
+  "butylene_glycol": {
+    "name": "Butylene Glycol",
+    "benefits": ["Hydration", "Improves texture"],
+    "goodFor": ["all"],
+    "avoid": ["none"],
+    "caution": ["fungal acne-prone skin may react"],
+    "explanation": "Humectant that helps retain moisture and improve spreadability"
+  },
+
+  "ethoxydiglycol": {
+    "name": "Ethoxydiglycol",
+    "benefits": ["Enhances penetration"],
+    "goodFor": ["all"],
+    "avoid": ["none"],
+    "caution": ["may increase irritation with strong actives"],
+    "explanation": "Solvent that helps active ingredients penetrate deeper"
+  },
+
+  "salicylic_acid": {
+    "name": "Salicylic Acid",
+    "benefits": ["Treats acne", "Unclogs pores", "Reduces blackheads"],
+    "goodFor": ["oily", "acne-prone"],
+    "avoid": ["very sensitive", "aspirin allergy"],
+    "caution": ["dryness", "irritation"],
+    "explanation": "BHA exfoliant that penetrates pores to remove excess oil"
+  },
+
+  "glycerin": {
+    "name": "Glycerin",
+    "benefits": ["Deep hydration", "Barrier repair"],
+    "goodFor": ["all", "dry", "sensitive"],
+    "avoid": ["none"],
+    "caution": ["none"],
+    "explanation": "Powerful humectant that draws moisture into the skin"
+  },
+
+  "alpha_arbutin": {
+    "name": "Alpha Arbutin",
+    "benefits": ["Reduces pigmentation", "Brightens"],
+    "goodFor": ["hyperpigmentation", "uneven tone"],
+    "avoid": ["none"],
+    "caution": ["use sunscreen"],
+    "explanation": "Gentle skin-lightening agent that reduces melanin production"
+  },
+
+  "centella_asiatica": {
+    "name": "Centella Asiatica Extract",
+    "benefits": ["Soothes skin", "Reduces redness", "Heals barrier"],
+    "goodFor": ["sensitive", "acne-prone", "damaged barrier"],
+    "avoid": ["none"],
+    "caution": ["none"],
+    "explanation": "Calming plant extract known for healing and anti-inflammatory properties"
+  },
+
+  "allantoin": {
+    "name": "Allantoin",
+    "benefits": ["Soothing", "Healing", "Reduces irritation"],
+    "goodFor": ["sensitive", "dry"],
+    "avoid": ["none"],
+    "caution": ["none"],
+    "explanation": "Skin protectant that promotes healing and softness"
+  },
+
+  "sodium_hyaluronate": {
+    "name": "Sodium Hyaluronate",
+    "benefits": ["Hydration", "Plumping"],
+    "goodFor": ["all", "dehydrated"],
+    "avoid": ["none"],
+    "caution": ["use with moisturizer"],
+    "explanation": "Salt form of hyaluronic acid that deeply hydrates skin"
+  },
+
+  "willow_bark_extract": {
+    "name": "Willow Bark Extract",
+    "benefits": ["Natural exfoliation", "Acne control"],
+    "goodFor": ["oily", "acne-prone"],
+    "avoid": ["aspirin allergy"],
+    "caution": ["may dry sensitive skin"],
+    "explanation": "Natural source of salicylates that gently exfoliate"
+  },
+
+  "olive_oil": {
+    "name": "Olive Fruit Oil",
+    "benefits": ["Moisturizing", "Antioxidant"],
+    "goodFor": ["dry"],
+    "avoid": ["acne-prone"],
+    "caution": ["can clog pores"],
+    "explanation": "Natural oil rich in fatty acids"
+  },
+
+  "safflower_oil": {
+    "name": "Safflower Seed Oil",
+    "benefits": ["Lightweight moisture", "Barrier repair"],
+    "goodFor": ["dry", "combination"],
+    "avoid": ["none"],
+    "caution": ["none"],
+    "explanation": "Non-greasy oil rich in linoleic acid"
+  },
+
+  "phenoxyethanol": {
+    "name": "Phenoxyethanol",
+    "benefits": ["Preservative"],
+    "goodFor": ["all"],
+    "avoid": ["very sensitive"],
+    "caution": ["possible irritation"],
+    "explanation": "Preservative that prevents bacterial growth"
+  },
+
+  "ethylhexylglycerin": {
+    "name": "Ethylhexylglycerin",
+    "benefits": ["Preservative booster", "Skin conditioning"],
+    "goodFor": ["all"],
+    "avoid": ["none"],
+    "caution": ["rare irritation"],
+    "explanation": "Enhances preservative efficacy and skin feel"
+  },
+
+  "fragrance": {
+    "name": "Fragrance / Parfum",
+    "benefits": ["Pleasant scent"],
+    "goodFor": ["normal"],
+    "avoid": ["sensitive", "eczema", "rosacea"],
+    "caution": ["common allergen"],
+    "explanation": "Added scent that may cause irritation in sensitive skin"
+  }
+}
+

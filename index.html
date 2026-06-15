@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlowMate✨ - Your AI Skincare Assistant and Ingredient scanner</title>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ========================================
+           RESET & BASE STYLES
+        ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Professional serif font for headings */
+            font-family: 'Georgia', 'Times New Roman', serif;
+            /* Peach gradient background - warm and skincare appropriate */
+            background: linear-gradient(135deg, #F8B195 0%, #F67280 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ========================================
+           MAIN CONTAINER
+        ======================================== */
+        .container {
+            background: white;
+            border-radius: 20px;
+            /* Subtle shadow - professional, not overdone */
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            max-width: 1000px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* ========================================
+           LEFT SIDE - WELCOME SECTION
+        ======================================== */
+        .welcome-section {
+            flex: 1;
+            padding: 60px 40px;
+            /* Same peach gradient as background */
+            background: linear-gradient(135deg, #F8B195 0%, #F67280 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Logo - just text, no emoji */
+        .logo {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .welcome-section h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .welcome-section p {
+            /* Sans-serif for body text - more readable */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        /* Feature list with Font Awesome icons */
+        .features {
+            margin-top: 30px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Font Awesome icon styling */
+        .feature-item i {
+            font-size: 20px;
+            margin-right: 15px;
+            width: 25px;
+        }
+
+        /* ========================================
+           RIGHT SIDE - LOGIN/SIGNUP FORM
+        ======================================== */
+        .form-section {
+            flex: 1;
+            padding: 60px 40px;
+        }
+
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        /* ========================================
+           FORM ELEMENTS
+        ======================================== */
+        .form-group {
+            margin-bottom: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-group label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Simple transition on focus */
+            transition: border-color 0.3s;
+        }
+
+        /* Focus state - simple color change */
+        .form-group input:focus {
+            outline: none;
+            border-color: #F67280; /* Matches theme */
+        }
+
+        /* ========================================
+           PASSWORD FIELD WITH PEEK BUTTON
+        ======================================== */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            /* Simple hover effect */
+            transition: color 0.3s;
+        }
+
+        .password-toggle:hover {
+            color: #F67280;
+        }
+
+        /* ========================================
+           BUTTONS
+        ======================================== */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            /* Solid color - no gradient on buttons */
+            background: #F67280;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Simple hover effect - gets slightly darker */
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #e55b6f; /* Slightly darker */
+        }
+
+        .btn:active {
+            background: #d44a5f; /* Even darker when clicked */
+        }
+
+        /* ========================================
+           TOGGLE BETWEEN LOGIN AND SIGNUP
+        ======================================== */
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+        }
+
+        .toggle-form a {
+            color: #F67280;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+
+        /* ========================================
+           MESSAGE ALERTS
+        ======================================== */
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+        }
+
+        .message.error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+
+        .message.success {
+            background: #efe;
+            color: #3c3;
+            border: 1px solid #cfc;
+        }
+
+        /* Hide signup form initially */
+        #signupForm {
+            display: none;
+        }
+
+        /* ========================================
+           RESPONSIVE DESIGN
+        ======================================== */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .welcome-section {
+                padding: 40px 30px;
+            }
+            
+            .form-section {
+                padding: 40px 30px;
+            }
+            
+            .welcome-section h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ========================================
+             LEFT SIDE: WELCOME SECTION
+        ======================================== -->
+        <div class="welcome-section">
+            <div class="logo">GlowMate✨</div>
+            <h1>Your AI Skincare Assistant and Ingredient scanner.</h1>
+            <p>Analyze skincare ingredients and get personalized product insights tailored to your unique skin profile with smart AI for skincare routine</p>
+            
+            <!-- Features with Font Awesome icons instead of emojis -->
+            <div class="features">
+                <div class="feature-item">
+                    <i class="fas fa-camera"></i>
+                    <div>Scan ingredient lists instantly</div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-robot"></i>
+                    <div>Get AI-powered analysis and skincare routines</div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-user-check"></i>
+                    <div>Receive personalized recommendations</div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <div>Learn about your skin</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================
+             RIGHT SIDE: LOGIN/SIGNUP FORMS
+        ======================================== -->
+        <div class="form-section">
+            <!-- Message area for errors/success -->
+            <div id="message" class="message"></div>
+
+            <!-- ========================================
+                 LOGIN FORM
+            ======================================== -->
+            <div id="loginForm">
+                <h2>Sign In</h2>
+                <form id="loginFormElement">
+                    <!-- Email field -->
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" required placeholder="your@email.com">
+                    </div>
+                    
+                    <!-- Password field with peek button -->
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="loginPassword" required placeholder="Enter your password">
+                            <!-- Eye icon button to show/hide password -->
+                            <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn">Sign In</button>
+                </form>
+                
+                <div class="toggle-form">
+                    Don't have an account? <a href="#" id="showSignup">Create one</a>
+                </div>
+            </div>
+
+            <!-- ========================================
+                 SIGNUP FORM (hidden initially)
+            ======================================== -->
+            <div id="signupForm">
+                <h2>Create Account</h2>
+                <form id="signupFormElement">
+                    <!-- Name field -->
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" required placeholder="your name">
+                    </div>
+                    
+                    <!-- Email field -->
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" required placeholder="your@email.com">
+                    </div>
+                    
+                    <!-- Password field with peek button -->
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="signupPassword" required placeholder="At least 6 characters">
+                            <!-- Eye icon button to show/hide password -->
+                            <button type="button" class="password-toggle" onclick="togglePassword('signupPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn">Create Account</button>
+                </form>
+                
+                <div class="toggle-form">
+                    Already have an account? <a href="#" id="showLogin">Sign in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================
+         FIREBASE SDK
+    ======================================== -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ========================================
+        // FIREBASE CONFIGURATION
+        // ========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfj-_lJznvocLDQyDiiZvtEUf9xa18B78",
+            authDomain: "glowmate-155a1.firebaseapp.com",
+            projectId: "glowmate-155a1",
+            storageBucket: "glowmate-155a1.firebasestorage.app",
+            messagingSenderId: "318839433654",
+            appId: "1:318839433654:web:c5ec16f4ab270e4a27f917"
+        };
+
+        // Initialize Firebase - connects our app to Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Create shortcuts to Firebase services
+        const auth = firebase.auth();  // For user authentication
+        const db = firebase.firestore();  // For storing user data
+
+        // ========================================
+        // PASSWORD PEEK FUNCTION (Show/Hide Password)
+        // ========================================
+        function togglePassword(inputId, button) {
+            // Get the password input field by its ID
+            const input = document.getElementById(inputId);
+            // Get the icon inside the button
+            const icon = button.querySelector('i');
+            
+            // Check current type of input
+            if (input.type === 'password') {
+                // Show password
+                input.type = 'text';
+                // Change icon to "eye-slash" (indicates password is visible)
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                // Hide password
+                input.type = 'password';
+                // Change icon back to "eye"
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // ========================================
+        // TOGGLE BETWEEN LOGIN AND SIGNUP FORMS
+        // ========================================
+        
+        // Get references to HTML elements
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const showSignupLink = document.getElementById('showSignup');
+        const showLoginLink = document.getElementById('showLogin');
+        const messageDiv = document.getElementById('message');
+
+        // When user clicks "Create one" link
+        showSignupLink.addEventListener('click', function(e) {
+            e.preventDefault();  // Prevent default link behavior
+            loginForm.style.display = 'none';  // Hide login form
+            signupForm.style.display = 'block';  // Show signup form
+            messageDiv.style.display = 'none';  // Hide any messages
+        });
+
+        // When user clicks "Sign in" link
+        showLoginLink.addEventListener('click', function(e) {
+            e.preventDefault();  // Prevent default link behavior
+            signupForm.style.display = 'none';  // Hide signup form
+            loginForm.style.display = 'block';  // Show login form
+            messageDiv.style.display = 'none';  // Hide any messages
+        });
+
+        // ========================================
+        // HELPER FUNCTION: Show messages to user
+        // ========================================
+        function showMessage(message, type) {
+            messageDiv.textContent = message;  // Set the message text
+            messageDiv.className = 'message ' + type;  // Add 'error' or 'success' class
+            messageDiv.style.display = 'block';  // Make it visible
+            
+            // Auto-hide success messages after 3 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // ========================================
+        // SIGNUP FUNCTIONALITY
+        // ========================================
+        document.getElementById('signupFormElement').addEventListener('submit', async function(e) {
+            e.preventDefault();  // Prevent form from refreshing page
+            
+            // Get values from input fields
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            try {
+                // Create user account in Firebase Authentication
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // Save additional user info in Firestore database
+                await db.collection('users').doc(user.uid).set({
+                    name: name,
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    skinProfile: {
+                        completed: false  // User hasn't set up their skin profile yet
+                    }
+                });
+
+                showMessage('Account created successfully! Redirecting...', 'success');
+                
+                // Redirect to profile setup after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'profile-setup.html';
+                }, 2000);
+
+            } catch (error) {
+                // Show error message if signup fails
+                console.error('Signup error:', error);
+                showMessage(error.message, 'error');
+            }
+        });
+
+        // ========================================
+        // LOGIN FUNCTIONALITY
+        // ========================================
+        document.getElementById('loginFormElement').addEventListener('submit', async function(e) {
+            e.preventDefault();  // Prevent form from refreshing page
+            
+            // Get values from input fields
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                // Sign in user with Firebase Authentication
+                await auth.signInWithEmailAndPassword(email, password);
+                
+                showMessage('Login successful! Redirecting...', 'success');
+                
+                // Check if user has completed profile
+                const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+                
+                setTimeout(() => {
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        // Check if profile is completed
+                        if (userData.skinProfile && userData.skinProfile.completed) {
+                            // Profile completed, go to dashboard
+                            window.location.href = 'dashboard.html';
+                        } else {
+                            // Profile not completed, go to setup
+                            window.location.href = 'profile-setup.html';
+                        }
+                    } else {
+                        // No user document, go to profile setup
+                        window.location.href = 'profile-setup.html';
+                    }
+                }, 1000);
+
+            } catch (error) {
+                // Show error message if login fails
+                console.error('Login error:', error);
+                showMessage('Invalid email or password. Please try again.', 'error');
+            }
+        });
+
+        // ========================================
+        // CHECK IF USER IS ALREADY LOGGED IN
+        // ========================================
+        // This runs when page loads
+        auth.onAuthStateChanged(async function(user) {
+            if (user) {
+                // User is logged in, check if profile is complete
+                try {
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        
+                        // If profile not completed, go to profile setup
+                        if (!userData.skinProfile || !userData.skinProfile.completed) {
+                            window.location.href = 'profile-setup.html';
+                        } else {
+                            // Profile completed, go to dashboard
+                            window.location.href = 'dashboard.html';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking user data:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
