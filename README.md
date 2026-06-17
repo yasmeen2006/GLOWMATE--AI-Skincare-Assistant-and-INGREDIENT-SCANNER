@@ -39,7 +39,8 @@ based on their unique skin type, concerns, allergies, and pregnancy status — n
 ## 📸 Screenshots
 
 <!-- Add screenshots here — drag and drop images into this editor on GitHub -->
-> _App walkthrough screenshots coming soon_
+> _App walkthrough screenshots coming soon_<img width="950" height="397" alt="image" src="https://github.com/user-attachments/assets/9061d9a3-3f05-46b0-a278-59b229ca4a75" />
+
 
 ---
 
